@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "outDir": "./lib/src",
+    "rootDir": "./src",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "target": "esnext",
+    "skipLibCheck": true
+  },
+  "compileOnSave": true,
+  "include": ["src/**/*"]
+}

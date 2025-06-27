@@ -1,0 +1,28 @@
+{
+  "name": "agritime-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:prod": "node build.js",
+    "deploy:prod": "npm run build:prod && scp dist/index.js edwardsDell:/home/wesley/agritime/server/",
+    "start": "npm run build && cross-env NODE_ENV=dev && cd lib/src && node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/socket.io": "^3.0.2",
+    "esbuild": "^0.25.5",
+    "typescript": "^5.8.3"
+  }
+}
