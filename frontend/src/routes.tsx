@@ -3,6 +3,8 @@ import {Landing} from "./pages/Landing"
 import {Profile} from "./pages/Profile"
 import {AuthLayout} from "./layout/AuthLayout"
 import {UnAuthLayout} from "./layout/UnauthLayout"
+import {AcceptCode} from "./pages/AcceptCode"
+import {RoomHome} from "./pages/RoomHome"
 
 export const unauthRoutes = createBrowserRouter([
   {
@@ -12,6 +14,14 @@ export const unauthRoutes = createBrowserRouter([
       {
         path: "landing",
         Component: Landing,
+      },
+      {
+        path: "room-home/:roomId",
+        Component: RoomHome,
+      },
+      {
+        path: "accept-code",
+        Component: AcceptCode,
       },
       {
         index: true,

@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react"
-import {User} from "./sockets"
+import {User} from "./shared"
 
 type AuthContextType = {}
 
@@ -35,28 +35,6 @@ export const useAuthContext = () => {
   return ctx
 }
 
-// const timedToken = (refresh: string) => {
-//   let lastPull = new Date();
-//   let expires_in = 0;
-//   let accessToken = "";
-
-//   return async () => {
-//     const timedOut =
-//       new Date().getTime() - lastPull.getTime() > 1_000 * 60 * expires_in; //  1_000 * 60 * 3;
-
-//     if (!accessToken || timedOut) {
-//       lastPull = new Date();
-//       return new LiveApi(createBasicFetcher("http://localhost:8080")).userAuth
-//         .getTokenSimple(refresh)
-//         .then((token) => {
-//           accessToken = token;
-//           return token;
-//         });
-//     }
-//     return accessToken;
-//   };
-// };
-
 type Encoder<T> = {
   encode: (s: T) => string
   decode: (s: string) => T
@@ -70,7 +48,7 @@ export function usePersistentState<T>(
     decode: (v) => JSON.parse(v),
   }
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const [s, setS] = useState<T>((initValue ?? null) as T)
+  const [s, setS] = useState<T>(null as T)
   const loaded = useRef(false)
   const actualKey = useMemo(() => `${key}`, [key])
 
@@ -94,6 +72,13 @@ export function usePersistentState<T>(
       })
     }
   }, [actualKey])
+  if (s === null || s === undefined) {
+    const prev = window.localStorage.getItem(actualKey)
+    const actualValue = prev === null ? initValue : encoder.decode(prev)
+    if (actualValue) {
+      return [actualValue, setS] as const
+    }
+  }
 
   return [s, setS] as const
 }

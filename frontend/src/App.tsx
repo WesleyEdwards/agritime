@@ -6,14 +6,18 @@ import {
   ThemeProvider,
 } from "@mui/joy"
 import {unauthRoutes} from "./routes"
-import {SocketContextProvider, User} from "./sockets"
+import {SocketContextProvider} from "./sockets"
 import {UnauthContext, usePersistentState} from "./useAuth"
+import {User} from "./shared"
 
 export default function App() {
   const [user, setUser] = usePersistentState<User>("user", {
-    name: undefined,
+    name: "",
+    anonymous: false,
+    connected: false,
     id: crypto.randomUUID(),
   })
+  console.log("user", user)
 
   return (
     <CssVarsProvider defaultMode="dark" theme={theme}>

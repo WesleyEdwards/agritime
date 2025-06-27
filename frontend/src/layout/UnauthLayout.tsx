@@ -4,7 +4,14 @@ import {Outlet} from "react-router-dom"
 export const UnAuthLayout = () => {
   return (
     <Stack
-      sx={{minHeight: "100vh", textAlign: "center", p: 2, display: "flex"}}
+      sx={{
+        minHeight: "100vh",
+        textAlign: "center",
+        p: 2,
+        display: "flex",
+        maxWidth: "md",
+        mx: "auto",
+      }}
     >
       <Outlet />
       <div style={{flex: 1}}></div>

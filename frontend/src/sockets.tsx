@@ -1,5 +1,6 @@
 import React, {createContext, useContext, useEffect, useState} from "react"
 import {io, Socket} from "socket.io-client"
+import { useUnauthContext } from "./useAuth"
 
 interface SocketContextType {
   socket: Socket
@@ -13,11 +14,14 @@ export const SocketContextProvider = ({
   children: React.ReactNode
 }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
+  const {user} = useUnauthContext()
 
   useEffect(() => {
+    console.log("HERE USER IS: $", user)
     const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
       transports: ["websocket", "polling"], // try websocket first
       secure: true,
+      auth: {userId: user.id}
     })
     setSocket(newSocket)
 
@@ -38,27 +42,4 @@ export const useSocketContext = () => {
   if (!ctx) throw new Error("Not defined")
 
   return ctx
-}
-
-export type User = {
-  name: string | undefined
-  id: string
-}
-
-export type EventsMap = {
-  createRoom: {room: Room; user: User}
-  joinRoom: {room: string; user: User}
-  upsertUser: {user: User}
-}
-
-export const events: {[K in keyof EventsMap]: K} = {
-  joinRoom: "joinRoom",
-  createRoom: "createRoom",
-  upsertUser: "upsertUser",
-}
-
-export type Room = {
-  id: string
-  name: string
-  users: User[]
 }

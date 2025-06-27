@@ -16,6 +16,7 @@
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "express": "^5.1.0",
+    "simply-served": "^1.0.12",
     "socket.io": "^4.8.1",
     "uuid": "^11.1.0"
   },
