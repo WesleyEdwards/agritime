@@ -128,7 +128,6 @@ const useInterval = (callback: () => void, ms: number) => {
   const cb = useRef<() => void>()
 
   useEffect(() => {
-    console.log("CB is changing")
     cb.current = callback
   }, [callback])
 

@@ -16,6 +16,7 @@ export const reconcileTime = (room: Room, when: number) => {
       const elapsedTime = (when - room.previousSwitch) / 1000
       const remaining = u.timeRemaining - elapsedTime
       u.timeRemaining = Math.floor(remaining)
+      room.previousSwitch = Date.now()
     }
   })
 }

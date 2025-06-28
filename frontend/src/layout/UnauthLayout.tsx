@@ -1,4 +1,4 @@
-import {Divider, Stack} from "@mui/joy"
+import {Stack} from "@mui/joy"
 import {Outlet} from "react-router-dom"
 
 export const UnAuthLayout = () => {
