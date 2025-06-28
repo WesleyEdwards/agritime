@@ -15,11 +15,11 @@ export const UnAuthLayout = () => {
     >
       <Outlet />
       <div style={{flex: 1}}></div>
-      <Divider
+      {/* <Divider
         sx={{
           my: 4,
         }}
-      />
+      /> */}
     </Stack>
   )
 }

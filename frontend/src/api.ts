@@ -26,4 +26,13 @@ export const api = {
       },
       body: JSON.stringify(body),
     }).then((r) => r.json()),
+
+  leaveRoom: (body: {roomId: string, userId: string}): Promise<unknown> =>
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/rest/leave-room`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    }).then((r) => r.json()),
 }

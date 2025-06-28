@@ -1,17 +1,17 @@
-import { buildRoute } from "simply-served";
-import { Controller } from "simply-served/build/types";
-import { Server } from "socket.io";
-import { generateCode } from "./utils";
-import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
-import { emitEvent, logger } from "./events";
-import { Room } from "./shared";
+import {buildRoute} from "simply-served"
+import {Controller} from "simply-served/build/types"
+import {Server} from "socket.io"
+import {generateCode, reconcileTime} from "./utils"
+import {z} from "zod"
+import {v4 as uuidv4} from "uuid"
+import {emitEvent, logger} from "./events"
+import {Room, User} from "./shared"
 
 export type ServerCtx = {
-  db: { rooms: Map<string, Room> };
-  auth: any;
-  io: Server;
-};
+  db: {rooms: Map<string, Room>}
+  auth: any
+  io: Server
+}
 
 export const simplyServerEndpoints: Controller<ServerCtx>[] = [
   {
@@ -19,20 +19,23 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
     routes: [
       buildRoute<ServerCtx>("get")
         .path("/get-rooms")
-        .build(async ({ res, db }) => {
-          return res.json(Array.from(db.rooms.values()));
+        .build(async ({res, db}) => {
+          return res.json(Array.from(db.rooms.values()))
         }),
       buildRoute<ServerCtx>("post")
         .path("/create-room")
-        .build(async ({ res, db }) => {
-          const room = {
+        .build(async ({res, db}) => {
+          const room: Room = {
             id: uuidv4(),
             code: generateCode(),
+            initTime: 20 * 60,
+            previousSwitch: Date.now(),
+            timerOn: null,
             users: [],
-          };
-          db.rooms.set(room.id, room);
-          logger?.("createRoom", room);
-          return res.json(room);
+          }
+          db.rooms.set(room.id, room)
+          logger?.("createRoom", room)
+          return res.json(room)
         }),
       buildRoute<ServerCtx>("post")
         .path("/join-room")
@@ -47,23 +50,50 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
             }),
           }),
         })
-        .build(async ({ res, body, db, io }) => {
+        .build(async ({res, body, db, io}) => {
           db.rooms.forEach((r) => {
             if (r.code == body.code) {
               if (!r.users.some((u) => u.id === body.user.id)) {
-                r.users.push(body.user);
-                emitEvent(io, { upsertRoom: { room: r } });
+                r.users.push({
+                  ...body.user,
+                  connected: true,
+                  anonymous: false,
+                  timeRemaining: r.initTime,
+                })
+                reconcileTime(r, Date.now())
+                emitEvent(io, {upsertRoom: {room: r}})
               }
             }
-          });
+          })
           const room = Array.from(db.rooms.values()).find(
             (r) => r.code === body.code
-          );
+          )
           if (!room) {
-            return res.status(404).json({ error: "Room not found" });
+            return res.status(404).json({error: "Room not found"})
           }
-          return res.json(room);
+          return res.json(room)
+        }),
+      buildRoute<ServerCtx>("post")
+        .path("/leave-room")
+        .withBody({
+          validator: z.object({
+            roomId: z.string(),
+            userId: z.string(),
+          }),
+        })
+        .build(async ({body, res, db, io}) => {
+          const room = db.rooms.get(body.roomId)
+          if (!room) return res.status(404).json({error: "Room not found"})
+          const user = room.users.find((u) => u.id === body.userId)
+          if (user) {
+            user.connected = false
+            user.timeRemaining = -1
+            emitEvent(io, {upsertUser: {user: user}})
+            room.users = room.users.filter((u) => u.id !== body.userId)
+            emitEvent(io, {upsertRoom: {room}})
+          }
+          return res.json({ok: true})
         }),
     ],
   },
-];
+]

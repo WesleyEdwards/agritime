@@ -1,17 +1,21 @@
-import {useState, useEffect} from "react"
+import {useState, useEffect, useCallback} from "react"
 import {api} from "../api"
 import {useSocketContext} from "../sockets"
-import {Room, EventsMap, events} from "../shared"
+import {Room, EventsMap, events, User} from "../shared"
+import {useUnauthContext} from "../useAuth"
 
 export const useRoom = (id: string) => {
   const {socket} = useSocketContext()
   const [room, setRoom] = useState<Room | null | undefined>()
+  const {user} = useUnauthContext()
 
   useEffect(() => {
     api.getRooms().then((res) => {
       const foundRoom = res.find((r) => r.id === id)
       if (foundRoom) {
-        setRoom(foundRoom)
+        if (foundRoom.users.every((u) => u.id !== user.id)) {
+          setRoom(null)
+        } else setRoom(foundRoom)
       } else {
         setRoom(null)
       }
@@ -21,6 +25,7 @@ export const useRoom = (id: string) => {
   useEffect(() => {
     const handleUpsertRoom = (params: EventsMap["upsertRoom"]) => {
       if (params.room.id === id) {
+        console.log("New room is", params.room)
         setRoom((prev) => {
           if (!prev) return params.room
           return {...prev, ...params.room}
@@ -35,5 +40,17 @@ export const useRoom = (id: string) => {
     }
   }, [socket])
 
-  return {room}
+  const switchTime = useCallback(
+    (user: User | null) => {
+      if (room)
+        socket.emit(events.switchTime, {
+          newUser: user?.id ?? null,
+          room: room.id,
+          timeOfSwitch: Date.now(),
+        } satisfies EventsMap["switchTime"])
+    },
+    [room, socket, user]
+  )
+
+  return {room, switchTime}
 }

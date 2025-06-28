@@ -42,10 +42,10 @@ export const AcceptCode = () => {
     <>
       <PageLayout title={"Welcome"}>
         <Stack>
-          <Typography sx={{my: 2}} level="body-md">
+          <Typography sx={{my: 4}} level="body-md">
             Please enter your name to join the timer.
           </Typography>
-          <Stack direction="row" alignItems={"end"} gap={2}>
+          <Stack gap={2}>
             <FormControl>
               <FormLabel>Name</FormLabel>
               <Input
@@ -58,7 +58,7 @@ export const AcceptCode = () => {
                     <Autorenew />
                   </IconButton>
                 }
-                placeholder="Your Name"
+                placeholder=""
                 value={user.name}
                 onChange={(e) => {
                   setUser({...user, name: e.target.value})
@@ -66,6 +66,7 @@ export const AcceptCode = () => {
               />
             </FormControl>
             <Button
+              fullWidth
               disabled={!user.name}
               onClick={(e) => {
                 e.preventDefault()

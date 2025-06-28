@@ -1,23 +1,32 @@
-
 export type User = {
-  name: string | undefined;
-  anonymous: boolean;
-  connected: boolean;
-  id: string;
-};
+  name: string | undefined
+  anonymous: boolean
+  connected: boolean
+  timeRemaining: number
+  id: string
+}
+export type Room = {
+  id: string
+  code: string
+  users: User[]
+  initTime: number
+  timerOn: string | null
+}
 
 export type EventsMap = {
-  upsertRoom: { room: Room };
-  upsertUser: { user: User };
-};
+  upsertRoom: {room: Room}
+  upsertUser: {user: User}
+  leaveRoom: {}
+  switchTime: {
+    room: string
+    newUser: string | null
+    timeOfSwitch: number
+  }
+}
 
-export const events: { [K in keyof EventsMap]: K } = {
+export const events: {[K in keyof EventsMap]: K} = {
   upsertRoom: "upsertRoom",
+  leaveRoom: "leaveRoom",
   upsertUser: "upsertUser",
-};
-
-export type Room = {
-  id: string;
-  code: string;
-  users: User[];
-};
+  switchTime: "switchTime"
+}

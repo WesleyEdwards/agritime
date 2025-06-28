@@ -4,7 +4,7 @@ import {Profile} from "./pages/Profile"
 import {AuthLayout} from "./layout/AuthLayout"
 import {UnAuthLayout} from "./layout/UnauthLayout"
 import {AcceptCode} from "./pages/AcceptCode"
-import {RoomHome} from "./pages/RoomHome"
+import {RoomHome} from "./pages/room/RoomHome"
 
 export const unauthRoutes = createBrowserRouter([
   {
