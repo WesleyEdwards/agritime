@@ -51,6 +51,22 @@ export const useRoom = (id: string) => {
     },
     [room, socket, user]
   )
+  const reorderUsers = useCallback(
+    (users: User[]) => {
+      users.forEach((user, i) => {
+        user.order = i
+      })
+      if (room) {
+        room.users = users
+        socket.emit(events.upsertRoom, {
+          room: room,
+        } satisfies EventsMap["upsertRoom"])
+      }
+      setRoom((prev) => (prev ? {...prev, users: users} : prev))
+      console.log("New order is: ", room?.users)
+    },
+    [room, socket, user]
+  )
 
-  return {room, switchTime}
+  return {room, switchTime, reorderUsers}
 }

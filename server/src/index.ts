@@ -6,7 +6,7 @@ import {createSimplyServer} from "simply-served"
 import {ServerCtx, simplyServerEndpoints} from "./simplyServerEndpoints"
 import {emitEvent, logger} from "./events"
 import {events, EventsMap, Room, User} from "./shared"
-import {reconcileTime} from "./utils"
+import {reconcileTime, updateConnection} from "./utils"
 
 const app = express()
 app.use(cors())
@@ -24,23 +24,10 @@ const io = new Server(server, {
   },
 })
 
-const updateConnection = (id: string, connected: boolean) => {
-  rooms.forEach((room) => {
-    const user = room.users.find((u) => u.id == id)
-    if (user) {
-      const newUser: User = {...user, connected}
-      room.users = room.users.map((u) => (u.id === newUser.id ? newUser : u))
-      reconcileTime(room, Date.now())
-      rooms.set(room.id, room)
-      emitEvent(io, {upsertRoom: {room: room}})
-    }
-  })
-}
-
 io.on("connection", (socket) => {
   const userId = socket.handshake.auth.userId
   logger?.("A user is connected", userId)
-  updateConnection(userId, true)
+  updateConnection(rooms, io, userId, true)
 
   socket.on(events.upsertUser, (params: EventsMap["upsertUser"]) => {
     rooms.forEach((r) => {
@@ -74,10 +61,15 @@ io.on("connection", (socket) => {
     }
   })
 
+  socket.on(events.upsertRoom, (params: EventsMap["upsertRoom"]) => {
+    logger?.("upsert room", params)
+    emitEvent(io, {upsertRoom: params})
+  })
+
   socket.on("disconnect", () => {
     const userId = socket.handshake.auth.userId
     logger?.(`User ${userId} has disconnected`)
-    updateConnection(userId, false)
+    updateConnection(rooms, io, userId, false)
   })
 })
 

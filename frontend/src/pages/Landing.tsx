@@ -66,17 +66,14 @@ export const Landing = () => {
             e.preventDefault()
             if (!code) return
             const rooms = await api.getRooms()
-            if (rooms.some((r) => r.code === code)) {
-              navigate(`/accept-code?code=${code}`)
+            if (rooms.some((r) => r.code === code.toUpperCase())) {
+              navigate(`/accept-code?code=${code.toUpperCase()}`)
             } else {
               toast({
                 color: "warning",
                 message: "Incorrect Code",
               })
             }
-            // api.joinRoom({code, user}).then((room) => {
-            //   navigate(`/room-home/${room.id}`)
-            // })
           }}
         >
           Join Timer

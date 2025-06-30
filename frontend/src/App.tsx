@@ -17,6 +17,7 @@ export default function App() {
     anonymous: false,
     connected: false,
     timeRemaining: -1,
+    order: -1,
     id: crypto.randomUUID(),
   })
 

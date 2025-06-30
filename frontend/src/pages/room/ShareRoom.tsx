@@ -13,10 +13,14 @@ import {
 import {useState} from "react"
 import {Room} from "../../shared"
 import {useToast} from "../../components/Toast"
+import {QRCodeShare} from "./qrCode"
 
 export const ShareRoom = ({room}: {room: Room}) => {
   const [open, setOpen] = useState(false)
   const toast = useToast()
+
+  const url = `${location.origin}/accept-code?code=${room.code}`
+
   return (
     <>
       <IconButton
@@ -31,36 +35,43 @@ export const ShareRoom = ({room}: {room: Room}) => {
           variant="outlined"
           role="alertdialog"
           sx={{
-            width: "100%"
+            width: "100%",
           }}
           maxWidth={"400px"}
         >
           <ModalClose sx={{zIndex: 8}} />
           <DialogTitle>Invite</DialogTitle>
-          <DialogContent>
-            <Stack gap={2}>
+          <DialogContent sx={{p: 1}}>
+            <Stack gap={2} alignItems={"center"}>
               <Typography sx={{mt: 2}} level="body-md">
-                Send this code to your friends to join your timer
+                Invite others to join the timer
               </Typography>
               <Typography sx={{my: 2, textAlign: "center"}} level="h3">
                 {room.code}
               </Typography>
+              <QRCodeShare url={url} />
               <Card
                 variant="soft"
                 sx={{
-                  p: 1,
                   display: "flex",
+                  p: 1,
                   alignItems: "center",
                   justifyContent: "space-between",
                   flexDirection: "row",
                   gap: 1,
-                  width: "100%",
                 }}
               >
-                <Typography sx={{color: "text.secondary"}} level={"body-xs"}>
-                  {location.origin}/accept-code?code={room.code}
+                <Typography
+                  sx={{
+                    lineBreak: "anywhere",
+                    color: "text.secondary",
+                  }}
+                  level={"body-xs"}
+                >
+                  {url}
                 </Typography>
                 <IconButton
+                  size="sm"
                   sx={{padding: 0}}
                   onClick={() => {
                     navigator.clipboard.writeText(

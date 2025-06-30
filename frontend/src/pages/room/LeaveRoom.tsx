@@ -23,12 +23,13 @@ export const LeaveRoom = ({room}: {room: Room}) => {
 
   return (
     <Button
-      variant="soft"
+      variant="outlined"
+      size="sm"
       color="danger"
       sx={{mt: 4, alignSelf: "center"}}
       onClick={handleLeave}
     >
-      Leave Room
+      Leave Timer
     </Button>
   )
 }

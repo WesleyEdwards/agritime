@@ -1,19 +1,24 @@
-import {Card, IconButton, Stack, Typography} from "@mui/joy"
+import {Divider, Stack, Typography} from "@mui/joy"
 import {useRoom} from "../../hooks/useRooms"
 import {useNavigate, useParams} from "react-router-dom"
-import {useEffect, useRef, useState} from "react"
+import {useEffect} from "react"
 import {PageLayout} from "../../layout/PageLayout"
 import {ShareRoom} from "./ShareRoom"
-import {Circle, Pause, PlayArrow} from "@mui/icons-material"
 import {LeaveRoom} from "./LeaveRoom"
 import {Spinner} from "../../components/spinner"
-import {User} from "../../shared"
+import {UserTimer} from "./UserTimer"
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd"
 
 export const RoomHome = () => {
   const {roomId} = useParams<{roomId: string}>()
   const navigate = useNavigate()
 
-  const {room, switchTime} = useRoom(roomId || "")
+  const {room, switchTime, reorderUsers} = useRoom(roomId || "")
 
   useEffect(() => {
     if (!roomId || room === null) {
@@ -26,6 +31,17 @@ export const RoomHome = () => {
     return <Spinner />
   }
 
+  const handleDragEnd = (result: DropResult) => {
+    const {source, destination} = result
+    if (!destination || source.index === destination.index) return
+
+    const newOrder = Array.from(room.users)
+    const [moved] = newOrder.splice(source.index, 1)
+    newOrder.splice(destination.index, 0, moved)
+
+    reorderUsers(newOrder)
+  }
+
   return (
     <PageLayout
       title={
@@ -35,113 +51,37 @@ export const RoomHome = () => {
         </Stack>
       }
     >
-      <Stack>
-        {room.users.map((user) => (
-          <UserTimer
-            key={user.id}
-            user={user}
-            timingUser={room.timerOn === user.id}
-            switchTime={switchTime}
-          />
-        ))}
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="userTimers">
+          {(provided) => (
+            <Stack ref={provided.innerRef} {...provided.droppableProps}>
+              {room.users
+                .sort((a, b) => {
+                  if (a.order < b.order) return -1
+                  return 1
+                })
+                .map((user, index) => (
+                  <Draggable key={user.id} draggableId={user.id} index={index}>
+                    {(provided) => (
+                      <div ref={provided.innerRef} {...provided.draggableProps}>
+                        <UserTimer
+                          dragProps={provided}
+                          user={user}
+                          timingUser={room.timerOn === user.id}
+                          switchTime={switchTime}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+              {provided.placeholder}
+            </Stack>
+          )}
+        </Droppable>
+      </DragDropContext>
 
-        <LeaveRoom room={room} />
-      </Stack>
+      <Divider sx={{mt: "8rem"}}></Divider>
+      <LeaveRoom room={room} />
     </PageLayout>
   )
-}
-
-const UserTimer = ({
-  user,
-  switchTime,
-  timingUser,
-}: {
-  user: User
-  timingUser: boolean
-  switchTime: (user: User | null) => void
-}) => {
-  const [timer, setTimer] = useState<number>(user.timeRemaining)
-
-  useInterval(() => {
-    if (timingUser) {
-      setTimer((prev) => prev - 1)
-    }
-  }, 1000)
-
-  useEffect(() => {
-    if (user.timeRemaining !== timer * 1000) {
-      console.log(`Setting timer to ${user.name}`, user.timeRemaining)
-      setTimer(user.timeRemaining)
-    }
-  }, [user.timeRemaining])
-
-  return (
-    <Card key={user.id} variant="outlined" sx={{p: 2, mt: 2}}>
-      {user.connected && (
-        <Circle
-          sx={{
-            position: "absolute",
-            width: "8px",
-            opacity: 0.8,
-            margin: "-12px 0px 0px -12px",
-          }}
-          color="success"
-        />
-      )}
-      <Stack
-        key={user.id}
-        direction="row"
-        justifyContent={"space-between"}
-        gap={2}
-        alignItems="center"
-      >
-        <Typography>{user.name || user.id}</Typography>
-
-        <Stack direction="row" gap={1} alignItems={"center"}>
-          <Typography>{formatTime(timer)}</Typography>
-          <IconButton
-            onClick={() => {
-              if (timingUser) {
-                switchTime(null)
-              } else {
-                switchTime(user)
-              }
-            }}
-          >
-            {timingUser ? <Pause color="success" /> : <PlayArrow />}
-          </IconButton>
-        </Stack>
-      </Stack>
-    </Card>
-  )
-}
-
-const formatTime = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds - minutes * 60
-  return `${minutes}:${
-    remainingSeconds > 9 ? remainingSeconds : `0${remainingSeconds}`
-  }`
-}
-
-const useInterval = (callback: () => void, ms: number) => {
-  const cb = useRef<() => void>()
-
-  useEffect(() => {
-    cb.current = callback
-  }, [callback])
-
-  useEffect(() => {
-    function tick() {
-      cb.current?.()
-    }
-
-    const id = setInterval(() => {
-      tick()
-    }, ms)
-
-    return () => {
-      clearInterval(id)
-    }
-  }, [ms])
 }

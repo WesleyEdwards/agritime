@@ -28,7 +28,7 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
           const room: Room = {
             id: uuidv4(),
             code: generateCode(),
-            initTime: 20 * 60,
+            initTime: 20 * 60 * 1000,
             previousSwitch: Date.now(),
             timerOn: null,
             users: [],
@@ -54,11 +54,13 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
           db.rooms.forEach((r) => {
             if (r.code == body.code) {
               if (!r.users.some((u) => u.id === body.user.id)) {
+                const len = r.users.length
                 r.users.push({
                   ...body.user,
                   connected: true,
                   anonymous: false,
                   timeRemaining: r.initTime,
+                  order: len
                 })
                 reconcileTime(r, Date.now())
                 emitEvent(io, {upsertRoom: {room: r}})
