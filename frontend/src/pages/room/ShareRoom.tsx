@@ -9,11 +9,13 @@ import {
   Stack,
   Typography,
   Card,
+  ListItem,
 } from "@mui/joy"
 import {useState} from "react"
 import {Room} from "../../shared"
 import {useToast} from "../../components/Toast"
 import {QRCodeShare} from "./qrCode"
+import {ListItemText} from "@mui/material"
 
 export const ShareRoom = ({room}: {room: Room}) => {
   const [open, setOpen] = useState(false)
@@ -43,9 +45,10 @@ export const ShareRoom = ({room}: {room: Room}) => {
           <DialogTitle>Invite</DialogTitle>
           <DialogContent sx={{p: 1}}>
             <Stack gap={2} alignItems={"center"}>
-              <Typography sx={{mt: 2}} level="body-md">
-                Invite others to join the timer
-              </Typography>
+              <ListItem>
+                <ListItemText />
+              </ListItem>
+
               <Typography sx={{my: 2, textAlign: "center"}} level="h3">
                 {room.code}
               </Typography>

@@ -1,17 +1,36 @@
-import {Circle, Pause, PlayArrow} from "@mui/icons-material"
-import {Card, Stack, Typography, IconButton} from "@mui/joy"
+import {
+  Autorenew,
+  Circle,
+  Edit,
+  EditRoad,
+  Pause,
+  PlayArrow,
+} from "@mui/icons-material"
+import {
+  Card,
+  Stack,
+  Typography,
+  IconButton,
+  FormControl,
+  FormLabel,
+  Input,
+} from "@mui/joy"
 import {useState, useEffect, useRef} from "react"
 import {User} from "../../shared"
 import {DraggableProvided} from "@hello-pangea/dnd"
+import {Dialog} from "../../components/Dialog"
+import {generateRandomName} from "../../utils"
 
 export const UserTimer = ({
   user,
   switchTime,
   timingUser,
+  editName,
   dragProps,
 }: {
   user: User
   timingUser: boolean
+  editName?: (name: string) => void
   switchTime: (user: User | null) => void
   dragProps: DraggableProvided
 }) => {
@@ -60,8 +79,15 @@ export const UserTimer = ({
         gap={2}
         alignItems="center"
       >
-        <Stack width="100%" {...dragProps.dragHandleProps} textAlign={"start"}>
-          <Typography>{user.name || user.id}</Typography>
+        <Stack direction="row" gap={1} alignItems={"center"}>
+          <Stack
+            width="100%"
+            {...dragProps.dragHandleProps}
+            textAlign={"start"}
+          >
+            <Typography>{user.name || user.id}</Typography>
+          </Stack>
+          {editName && <EditName user={user} setName={editName} />}
         </Stack>
 
         <Stack direction="row" gap={1} alignItems={"center"}>
@@ -87,6 +113,49 @@ export const UserTimer = ({
         </Stack>
       </Stack>
     </Card>
+  )
+}
+
+const EditName = ({
+  user,
+  setName,
+}: {
+  user: User
+  setName: (n: string) => void
+}) => {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <IconButton
+        size="sm"
+        onClick={() => {
+          setOpen(true)
+        }}
+      >
+        <Edit />
+      </IconButton>
+      <Dialog title={""} open={open} setOpen={setOpen}>
+        <FormControl>
+          <FormLabel>Name</FormLabel>
+          <Input
+            endDecorator={
+              <IconButton
+                onClick={() => {
+                  setName(generateRandomName())
+                }}
+              >
+                <Autorenew />
+              </IconButton>
+            }
+            placeholder=""
+            value={user.name}
+            onChange={(e) => {
+              setName(e.target.value)
+            }}
+          />
+        </FormControl>
+      </Dialog>
+    </>
   )
 }
 

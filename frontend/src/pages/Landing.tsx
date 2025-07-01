@@ -1,8 +1,13 @@
 import {
   Button,
+  DialogContent,
+  DialogTitle,
   Divider,
   FormControl,
   Input,
+  Modal,
+  ModalClose,
+  ModalDialog,
   Stack,
   Typography,
 } from "@mui/joy"
@@ -13,29 +18,28 @@ import {api} from "../api"
 import {AccessTime} from "@mui/icons-material"
 import {AutoLoadingButton} from "../components/AutoLoadingButton"
 import {useToast} from "../components/Toast"
+import agritimeImg from "../assets/agritime.png"
 
 export const Landing = () => {
-  const [code, setCode] = useState("")
   const {user} = useUnauthContext()
   const navigate = useNavigate()
-  const toast = useToast()
 
   return (
     <Stack
-      gap={4}
+      gap={2}
       alignItems="center"
       sx={{textAlign: "center"}}
       justifyContent={"center"}
     >
-      <Typography sx={{mt: 8, mb: 4}} level="h2">
-        Welcome to Agritime!
+      <Typography sx={{mt: 2}} level="h2">
+        Agritime
       </Typography>
-
-      <Typography level="h4">Create or join a timer</Typography>
+      <img src={agritimeImg} width="150px" height="150px" />
 
       <Button
         endDecorator={<AccessTime />}
         size="lg"
+        sx={{mt: 4}}
         onClick={(e) => {
           e.preventDefault()
           api.createRoom({user}).then((room) => {
@@ -46,39 +50,74 @@ export const Landing = () => {
         New Timer
       </Button>
 
-      <Divider>Or</Divider>
-
-      <Stack direction="row" alignItems={"end"} gap={2}>
-        <FormControl>
-          <Input
-            placeholder="Timer Code"
-            value={code}
-            onChange={(e) => {
-              setCode(e.target.value)
-            }}
-          />
-        </FormControl>
-        <AutoLoadingButton
-          sx={{textWrap: "nowrap"}}
-          size="sm"
-          disabled={code.length < 5}
-          onClick={async (e) => {
-            e.preventDefault()
-            if (!code) return
-            const rooms = await api.getRooms()
-            if (rooms.some((r) => r.code === code.toUpperCase())) {
-              navigate(`/accept-code?code=${code.toUpperCase()}`)
-            } else {
-              toast({
-                color: "warning",
-                message: "Incorrect Code",
-              })
-            }
-          }}
-        >
-          Join Timer
-        </AutoLoadingButton>
-      </Stack>
+      <Divider sx={{my: 4}}>Or</Divider>
+      <JoinAroom />
     </Stack>
+  )
+}
+
+const JoinAroom = () => {
+  const [code, setCode] = useState("")
+  const [open, setOpen] = useState(false)
+  const toast = useToast()
+  const navigate = useNavigate()
+
+  return (
+    <>
+      <Button
+        variant="outlined"
+        size="sm"
+        onClick={() => {
+          setOpen(true)
+        }}
+      >
+        Join a timer
+      </Button>
+      <Modal open={open} onClose={() => setOpen(false)} disableRestoreFocus>
+        <ModalDialog
+          variant="outlined"
+          role="alertdialog"
+          sx={{
+            width: "100%",
+          }}
+          maxWidth={"400px"}
+        >
+          <ModalClose sx={{zIndex: 8}} />
+          <DialogTitle>Timer Code</DialogTitle>
+          <DialogContent sx={{p: 1}}>
+            <Stack gap={2}>
+              <FormControl>
+                <Input
+                  placeholder="ABCDE"
+                  value={code}
+                  onChange={(e) => {
+                    setCode(e.target.value)
+                  }}
+                />
+              </FormControl>
+              <AutoLoadingButton
+                sx={{textWrap: "nowrap"}}
+                disabled={code.length < 5}
+                onClick={async (e) => {
+                  e.preventDefault()
+                  if (!code) return
+                  const rooms = await api.getRooms()
+                  if (rooms.some((r) => r.code === code.toUpperCase())) {
+                    navigate(`/accept-code?code=${code.toUpperCase()}`)
+                  } else {
+                    toast({
+                      color: "warning",
+                      message: "Incorrect Code",
+                    })
+                  }
+                }}
+              >
+                Join Timer
+              </AutoLoadingButton>
+            </Stack>
+          </DialogContent>
+        </ModalDialog>
+      </Modal>
+    </>
   )
 }

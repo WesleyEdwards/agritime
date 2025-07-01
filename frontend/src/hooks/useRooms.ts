@@ -68,5 +68,12 @@ export const useRoom = (id: string) => {
     [room, socket, user]
   )
 
-  return {room, switchTime, reorderUsers}
+  const upsertRoom = useCallback((room: Room) => {
+    socket.emit(events.upsertRoom, {
+      room: room,
+    } satisfies EventsMap["upsertRoom"])
+    setRoom((prev) => (prev ? {...prev, ...room} : prev))
+  }, [])
+
+  return {room, switchTime, reorderUsers, upsertRoom}
 }

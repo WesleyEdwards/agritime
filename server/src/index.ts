@@ -63,6 +63,7 @@ io.on("connection", (socket) => {
 
   socket.on(events.upsertRoom, (params: EventsMap["upsertRoom"]) => {
     logger?.("upsert room", params)
+    rooms.set(params.room.id, params.room)
     emitEvent(io, {upsertRoom: params})
   })
 

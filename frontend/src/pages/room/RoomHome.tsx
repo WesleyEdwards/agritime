@@ -1,10 +1,9 @@
-import {Divider, Stack, Typography} from "@mui/joy"
+import {Button, Divider, Stack, Typography} from "@mui/joy"
 import {useRoom} from "../../hooks/useRooms"
 import {useNavigate, useParams} from "react-router-dom"
 import {useEffect} from "react"
 import {PageLayout} from "../../layout/PageLayout"
 import {ShareRoom} from "./ShareRoom"
-import {LeaveRoom} from "./LeaveRoom"
 import {Spinner} from "../../components/spinner"
 import {UserTimer} from "./UserTimer"
 import {
@@ -13,12 +12,17 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd"
+import {SettingsPage} from "./SettingsPage"
+import {useUnauthContext} from "../../useAuth"
+import {useToast} from "../../components/Toast"
 
 export const RoomHome = () => {
   const {roomId} = useParams<{roomId: string}>()
   const navigate = useNavigate()
 
-  const {room, switchTime, reorderUsers} = useRoom(roomId || "")
+  const toast = useToast()
+  const {room, switchTime, reorderUsers, upsertRoom} = useRoom(roomId || "")
+  const {user: me, setUser} = useUnauthContext()
 
   useEffect(() => {
     if (!roomId || room === null) {
@@ -47,7 +51,10 @@ export const RoomHome = () => {
       title={
         <Stack direction={"row"} justifyContent={"space-between"}>
           <Typography level="h2">Timer</Typography>
-          <ShareRoom room={room} />
+          <Stack direction="row" gap="1rem">
+            <SettingsPage room={room} upsertRoom={upsertRoom} />
+            <ShareRoom room={room} />
+          </Stack>
         </Stack>
       }
     >
@@ -67,6 +74,24 @@ export const RoomHome = () => {
                         <UserTimer
                           dragProps={provided}
                           user={user}
+                          editName={
+                            user.id === me.id || user.anonymous
+                              ? (name) => {
+                                  room.users.forEach((u) => {
+                                    if (u.id === user.id) {
+                                      u.name = name
+                                    }
+                                  })
+                                  upsertRoom(room)
+                                  if (user.id === me.id) {
+                                    setUser((prev) => ({...prev, name: name}))
+                                  }
+                                  toast({
+                                    message: "Saved",
+                                  })
+                                }
+                              : undefined
+                          }
                           timingUser={room.timerOn === user.id}
                           switchTime={switchTime}
                         />
@@ -80,8 +105,20 @@ export const RoomHome = () => {
         </Droppable>
       </DragDropContext>
 
-      <Divider sx={{mt: "8rem"}}></Divider>
-      <LeaveRoom room={room} />
+      <Button
+        disabled={room.timerOn !== me.id}
+        onClick={() => {
+          const current = room.users.indexOf(
+            room.users.find((u) => u.id === room.timerOn) ?? room.users[0]
+          )
+          const idx = (current + 1) % room.users.length
+          switchTime(room.users[idx])
+        }}
+        size="lg"
+        sx={{mt: "4rem"}}
+      >
+        Pass Turn!
+      </Button>
     </PageLayout>
   )
 }
