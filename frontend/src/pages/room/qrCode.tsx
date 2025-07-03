@@ -13,8 +13,8 @@ export const QRCodeShare = ({url}: {url: string}) => {
   }, [url])
 
   if (!qr) {
-    return <div style={{width: "200px", height: "200px"}}></div>
+    return <div style={{width: "150px", height: "150px"}}></div>
   }
 
-  return <img width="200px" height="200px" src={qr} />
+  return <img width="150px" height="150px" src={qr} />
 }

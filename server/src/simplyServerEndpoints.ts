@@ -5,7 +5,7 @@ import {generateCode, reconcileTime} from "./utils"
 import {z} from "zod"
 import {v4 as uuidv4} from "uuid"
 import {emitEvent, logger} from "./events"
-import {Room, User} from "./shared"
+import {Room} from "./shared"
 
 export type ServerCtx = {
   db: {rooms: Map<string, Room>}
@@ -33,13 +33,12 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
             }
             return res.json(room)
           }
-          const room = db.rooms
-            .values()
-            .find((r) => r.code.toLowerCase() === body.code?.toLowerCase())
-          if (!room) {
-            throw new NotFoundError()
+          for (const [_, room] of db.rooms) {
+            if (room.code.toLowerCase() === body.code?.toLowerCase()) {
+              return res.json(room)
+            }
           }
-          return res.json(room)
+          throw new NotFoundError()
         }),
       buildRoute<ServerCtx>("post")
         .path("/create-room")
@@ -86,13 +85,12 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
               }
             }
           })
-          const room = Array.from(db.rooms.values()).find(
-            (r) => r.code === body.code
-          )
-          if (!room) {
-            return res.status(404).json({error: "Room not found"})
+          for (const [_, value] of db.rooms) {
+            if (value.code === body.code) {
+              return res.json(value)
+            }
           }
-          return res.json(room)
+          return res.status(404).json({error: "Room not found"})
         }),
       buildRoute<ServerCtx>("post")
         .path("/leave-room")

@@ -9,17 +9,15 @@ import {
   Stack,
   Typography,
   Card,
-  ListItem,
+  CardProps,
 } from "@mui/joy"
 import {useState} from "react"
 import {Room} from "../../shared"
 import {useToast} from "../../components/Toast"
 import {QRCodeShare} from "./qrCode"
-import {ListItemText} from "@mui/material"
 
 export const ShareRoom = ({room}: {room: Room}) => {
   const [open, setOpen] = useState(false)
-  const toast = useToast()
 
   const url = `${location.origin}/accept-code?code=${room.code}`
 
@@ -45,16 +43,12 @@ export const ShareRoom = ({room}: {room: Room}) => {
           <DialogTitle>Invite</DialogTitle>
           <DialogContent sx={{p: 1}}>
             <Stack gap={2} alignItems={"center"}>
-              <ListItem>
-                <ListItemText />
-              </ListItem>
-
               <Typography sx={{my: 2, textAlign: "center"}} level="h3">
                 {room.code}
               </Typography>
               <QRCodeShare url={url} />
-              <Card
-                variant="soft"
+              <ShareLink
+                url={url}
                 sx={{
                   display: "flex",
                   p: 1,
@@ -63,36 +57,41 @@ export const ShareRoom = ({room}: {room: Room}) => {
                   flexDirection: "row",
                   gap: 1,
                 }}
-              >
-                <Typography
-                  sx={{
-                    lineBreak: "anywhere",
-                    color: "text.secondary",
-                  }}
-                  level={"body-xs"}
-                >
-                  {url}
-                </Typography>
-                <IconButton
-                  size="sm"
-                  sx={{padding: 0}}
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      `${location.origin}/accept-code?code=${room.code}`
-                    )
-                    toast({
-                      message: "Copied to clipboard!",
-                    })
-                  }}
-                >
-                  <CopyAll />
-                </IconButton>
-              </Card>
+              />
             </Stack>
           </DialogContent>
         </ModalDialog>
       </Modal>
     </>
+  )
+}
+
+export const ShareLink = ({url, ...rest}: {url: string} & CardProps) => {
+  const toast = useToast()
+  return (
+    <Card variant="soft" {...rest}>
+      <Typography
+        sx={{
+          lineBreak: "anywhere",
+          color: "text.secondary",
+        }}
+        level={"body-xs"}
+      >
+        {url}
+      </Typography>
+      <IconButton
+        size="sm"
+        sx={{padding: 0}}
+        onClick={() => {
+          navigator.clipboard.writeText(url)
+          toast({
+            message: "Copied to clipboard!",
+          })
+        }}
+      >
+        <CopyAll />
+      </IconButton>
+    </Card>
   )
 }
 

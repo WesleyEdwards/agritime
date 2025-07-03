@@ -82,5 +82,3 @@ export const useRoom = (id: string) => {
 
   return {room, switchTime, reorderUsers, upsertRoom}
 }
-
-const ABORT_REASON = "Obtained through handleUpsertUser"

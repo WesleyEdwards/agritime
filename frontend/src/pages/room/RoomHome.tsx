@@ -1,9 +1,9 @@
-import {Button, Stack, Typography} from "@mui/joy"
+import {Button, Divider, Stack, Typography} from "@mui/joy"
 import {useRoom} from "../../hooks/useRooms"
 import {useNavigate, useParams} from "react-router-dom"
 import {useEffect} from "react"
 import {PageLayout} from "../../layout/PageLayout"
-import {ShareRoom} from "./ShareRoom"
+import {ShareLink, ShareRoom} from "./ShareRoom"
 import {Spinner} from "../../components/spinner"
 import {UserTimer} from "./UserTimer"
 import {
@@ -15,6 +15,7 @@ import {
 import {SettingsPage} from "./SettingsPage"
 import {useUnauthContext} from "../../useAuth"
 import {useToast} from "../../components/Toast"
+import {QRCodeShare} from "./qrCode"
 
 export const RoomHome = () => {
   const {roomId} = useParams<{roomId: string}>()
@@ -46,6 +47,8 @@ export const RoomHome = () => {
     reorderUsers(newOrder)
   }
 
+  const hasMultipleUsers = room.users.length > 1
+
   return (
     <PageLayout
       title={
@@ -58,6 +61,34 @@ export const RoomHome = () => {
         </Stack>
       }
     >
+      <Divider />
+      {!hasMultipleUsers && (
+        <>
+          <Stack gap={2} alignItems={"center"} sx={{my: "2rem"}}>
+            <Typography sx={{textAlign: "center"}}>
+              Share this link with your friends so they can join!
+            </Typography>
+            <QRCodeShare
+              url={`${location.origin}/accept-code?code=${room.code}`}
+            />
+            <Typography level="body-sm">
+              Invite Code: <b>{room.code}</b>
+            </Typography>
+            <ShareLink
+              url={`${location.origin}/accept-code?code=${room.code}`}
+              sx={{
+                display: "flex",
+                p: "4px",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexDirection: "row",
+                gap: 1,
+              }}
+            />
+          </Stack>
+        </>
+      )}
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="userTimers">
           {(provided) => (
@@ -105,20 +136,22 @@ export const RoomHome = () => {
         </Droppable>
       </DragDropContext>
 
-      <Button
-        disabled={room.timerOn !== me.id}
-        onClick={() => {
-          const current = room.users.indexOf(
-            room.users.find((u) => u.id === room.timerOn) ?? room.users[0]
-          )
-          const idx = (current + 1) % room.users.length
-          switchTime(room.users[idx])
-        }}
-        size="lg"
-        sx={{mt: "4rem"}}
-      >
-        Pass Turn!
-      </Button>
+      {hasMultipleUsers && (
+        <Button
+          disabled={room.timerOn !== me.id}
+          onClick={() => {
+            const current = room.users.indexOf(
+              room.users.find((u) => u.id === room.timerOn) ?? room.users[0]
+            )
+            const idx = (current + 1) % room.users.length
+            switchTime(room.users[idx])
+          }}
+          size="lg"
+          sx={{mt: "4rem", width: "100%"}}
+        >
+          Pass Turn!
+        </Button>
+      )}
     </PageLayout>
   )
 }

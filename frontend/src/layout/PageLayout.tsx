@@ -8,7 +8,7 @@ export const PageLayout = ({
   title: React.ReactNode
 }) => {
   return (
-    <Stack sx={{placeItems: "center", mt: "8rem"}}>
+    <Stack sx={{placeItems: "center", mt: "10vh", mx: 1}}>
       <Sheet
         sx={{
           borderRadius: 10,

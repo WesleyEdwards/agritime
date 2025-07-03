@@ -48,7 +48,7 @@ export const SettingsPage = ({
               <Input
                 type={"number"}
                 endDecorator={"min"}
-                disabled={room.users[0].timeRemaining !== room.initTime}
+                // disabled={room.users[0].timeRemaining !== room.initTime}
                 value={room.initTime / 1000 / 60}
                 onChange={(e) => {
                   const t = +e.target.value
