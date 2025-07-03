@@ -17,7 +17,6 @@ export const SocketContextProvider = ({
   const {user} = useUnauthContext()
 
   useEffect(() => {
-    console.log("HERE USER IS: $", user)
     const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
       transports: ["websocket", "polling"], // try websocket first
       secure: true,

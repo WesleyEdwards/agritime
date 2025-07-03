@@ -1,4 +1,4 @@
-import {Button, Divider, Stack, Typography} from "@mui/joy"
+import {Button, Stack, Typography} from "@mui/joy"
 import {useRoom} from "../../hooks/useRooms"
 import {useNavigate, useParams} from "react-router-dom"
 import {useEffect} from "react"
@@ -72,7 +72,7 @@ export const RoomHome = () => {
                     {(provided) => (
                       <div ref={provided.innerRef} {...provided.draggableProps}>
                         <UserTimer
-                          dragProps={provided}
+                          dragProps={provided.dragHandleProps}
                           user={user}
                           editName={
                             user.id === me.id || user.anonymous

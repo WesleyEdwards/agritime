@@ -1,4 +1,4 @@
-import {buildRoute} from "simply-served"
+import {buildRoute, NotFoundError} from "simply-served"
 import {Controller} from "simply-served/build/types"
 import {Server} from "socket.io"
 import {generateCode, reconcileTime} from "./utils"
@@ -17,10 +17,29 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
   {
     path: "/rest",
     routes: [
-      buildRoute<ServerCtx>("get")
-        .path("/get-rooms")
-        .build(async ({res, db}) => {
-          return res.json(Array.from(db.rooms.values()))
+      buildRoute<ServerCtx>("post")
+        .path("/get-room")
+        .withBody({
+          validator: z.object({
+            id: z.string().optional(),
+            code: z.string().optional(),
+          }),
+        })
+        .build(async ({res, db, body}) => {
+          if (body.id) {
+            const room = db.rooms.get(body.id)
+            if (!room) {
+              throw new NotFoundError()
+            }
+            return res.json(room)
+          }
+          const room = db.rooms
+            .values()
+            .find((r) => r.code.toLowerCase() === body.code?.toLowerCase())
+          if (!room) {
+            throw new NotFoundError()
+          }
+          return res.json(room)
         }),
       buildRoute<ServerCtx>("post")
         .path("/create-room")
@@ -34,7 +53,7 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
             users: [],
           }
           db.rooms.set(room.id, room)
-          logger?.("createRoom", room)
+          logger?.(`Created room ${room.id}`)
           return res.json(room)
         }),
       buildRoute<ServerCtx>("post")
@@ -60,7 +79,7 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
                   connected: true,
                   anonymous: false,
                   timeRemaining: r.initTime,
-                  order: len
+                  order: len,
                 })
                 reconcileTime(r, Date.now())
                 emitEvent(io, {upsertRoom: {room: r}})

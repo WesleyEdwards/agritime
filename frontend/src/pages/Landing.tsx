@@ -101,10 +101,10 @@ const JoinAroom = () => {
                 onClick={async (e) => {
                   e.preventDefault()
                   if (!code) return
-                  const rooms = await api.getRooms()
-                  if (rooms.some((r) => r.code === code.toUpperCase())) {
+                  try {
+                    await api.getRoom({code})
                     navigate(`/accept-code?code=${code.toUpperCase()}`)
-                  } else {
+                  } catch {
                     toast({
                       color: "warning",
                       message: "Incorrect Code",

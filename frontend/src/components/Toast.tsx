@@ -26,7 +26,7 @@ export const ToastProvider = ({children}: {children: React.ReactNode}) => {
       }}
     >
       <Snackbar
-        anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+        anchorOrigin={{vertical: "top", horizontal: "center"}}
         open={!!toastInfo}
         startDecorator={toastInfo?.startDecorator}
         onClose={(_, reason) => {

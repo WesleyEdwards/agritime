@@ -5,27 +5,32 @@ import {Room, EventsMap, events, User} from "../shared"
 import {useUnauthContext} from "../useAuth"
 
 export const useRoom = (id: string) => {
+  let aborter = new AbortController()
   const {socket} = useSocketContext()
   const [room, setRoom] = useState<Room | null | undefined>()
   const {user} = useUnauthContext()
 
   useEffect(() => {
-    api.getRooms().then((res) => {
-      const foundRoom = res.find((r) => r.id === id)
-      if (foundRoom) {
+    api
+      .getRoom({id}, aborter)
+      .then((foundRoom) => {
+        console.log("Found room", foundRoom)
         if (foundRoom.users.every((u) => u.id !== user.id)) {
           setRoom(null)
         } else setRoom(foundRoom)
-      } else {
-        setRoom(null)
-      }
-    })
+      })
+      .catch((e) => {
+        if (!e.message.includes("abort")) {
+          setRoom(null)
+        }
+      })
   }, [])
 
   useEffect(() => {
     const handleUpsertRoom = (params: EventsMap["upsertRoom"]) => {
       if (params.room.id === id) {
-        console.log("New room is", params.room)
+        console.log({handleUpsertRoom: params.room})
+        aborter.abort()
         setRoom((prev) => {
           if (!prev) return params.room
           return {...prev, ...params.room}
@@ -77,3 +82,5 @@ export const useRoom = (id: string) => {
 
   return {room, switchTime, reorderUsers, upsertRoom}
 }
+
+const ABORT_REASON = "Obtained through handleUpsertUser"

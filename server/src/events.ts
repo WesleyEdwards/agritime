@@ -1,13 +1,17 @@
 import {Server} from "socket.io"
 import {EventsMap, Room} from "./shared"
 
-export const logger: ((...data: any[]) => void) | null = console.log as
-  | ((...data: any[]) => void)
-  | null
+type Logger = ((...data: any[]) => void) | null
 
-export const emitEvent = (io: Server, event: Partial<EventsMap>) => {
+export const logger: ((...data: any[]) => void) | null = console.log as Logger
+
+export const emitEvent = (
+  io: Server,
+  event: Partial<EventsMap>,
+  log?: Logger
+) => {
   for (const [key, value] of Object.entries(event)) {
-    logger?.(`Emitting event: ${key}`, value)
+    log?.(`Emitting event: ${key}`, value)
     io.emit(key, value)
   }
 }

@@ -1,11 +1,4 @@
-import {
-  Autorenew,
-  Circle,
-  Edit,
-  EditRoad,
-  Pause,
-  PlayArrow,
-} from "@mui/icons-material"
+import {Autorenew, Circle, Edit, Pause, PlayArrow} from "@mui/icons-material"
 import {
   Card,
   Stack,
@@ -17,7 +10,7 @@ import {
 } from "@mui/joy"
 import {useState, useEffect, useRef} from "react"
 import {User} from "../../shared"
-import {DraggableProvided} from "@hello-pangea/dnd"
+import {DraggableProvidedDragHandleProps} from "@hello-pangea/dnd"
 import {Dialog} from "../../components/Dialog"
 import {generateRandomName} from "../../utils"
 
@@ -32,7 +25,7 @@ export const UserTimer = ({
   timingUser: boolean
   editName?: (name: string) => void
   switchTime: (user: User | null) => void
-  dragProps: DraggableProvided
+  dragProps: DraggableProvidedDragHandleProps | null
 }) => {
   const [timer, setTimer] = useState<number>(user.timeRemaining)
 
@@ -79,12 +72,15 @@ export const UserTimer = ({
         gap={2}
         alignItems="center"
       >
-        <Stack direction="row" gap={1} alignItems={"center"}>
-          <Stack
-            width="100%"
-            {...dragProps.dragHandleProps}
-            textAlign={"start"}
-          >
+        <Stack
+          {...dragProps}
+          direction="row"
+          width="100%"
+          height="100%"
+          gap={1}
+          alignItems={"center"}
+        >
+          <Stack textAlign={"start"}>
             <Typography>{user.name || user.id}</Typography>
           </Stack>
           {editName && <EditName user={user} setName={editName} />}
