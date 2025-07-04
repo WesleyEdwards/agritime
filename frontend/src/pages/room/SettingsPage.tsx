@@ -1,18 +1,20 @@
 import {
-  DialogContent,
-  DialogTitle,
+  Button,
+  Dropdown,
   FormControl,
   FormLabel,
   IconButton,
   Input,
-  Modal,
-  ModalClose,
-  ModalDialog,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Stack,
 } from "@mui/joy"
-import {LeaveRoom} from "./LeaveRoom"
-import {Settings} from "@mui/icons-material"
+import {AccessTime, Add, Settings} from "@mui/icons-material"
 import {Room} from "../../shared"
-import {useState} from "react"
+import React, {useState} from "react"
+import {Dialog} from "../../components/Dialog"
+import {useToast} from "../../components/Toast"
 
 export const SettingsPage = ({
   room,
@@ -21,52 +23,144 @@ export const SettingsPage = ({
   room: Room
   upsertRoom: (r: Room) => void
 }) => {
+  const toast = useToast()
+  return (
+    <>
+      <Dropdown>
+        <MenuButton
+          slots={{root: IconButton}}
+          slotProps={{root: {color: "neutral"}}}
+        >
+          <Settings />
+        </MenuButton>
+        <Menu placement="bottom-end" keepMounted>
+          <AddUser
+            renderButton={(onClick) => (
+              <MenuItem onClick={onClick}>
+                <Add />
+                Add Person
+              </MenuItem>
+            )}
+            save={(name) => {
+              room.users.push({
+                name,
+                anonymous: true,
+                connected: false,
+                timeRemaining: room.initTime,
+                order: room.users.length,
+                id: crypto.randomUUID(),
+              })
+              upsertRoom(room)
+            }}
+          />
+          <StartingTime
+            renderButton={(onClick) => (
+              <MenuItem onClick={onClick}>
+                <AccessTime />
+                Starting Time
+              </MenuItem>
+            )}
+            initValue={room.initTime}
+            save={(t) => {
+              room.initTime = t
+              room.users.forEach((user) => {
+                user.timeRemaining = t
+              })
+              upsertRoom(room)
+              toast({message: "Saved"})
+            }}
+          />
+        </Menu>
+      </Dropdown>
+    </>
+  )
+}
+
+const StartingTime = ({
+  save,
+  renderButton,
+  initValue,
+}: {
+  renderButton: (onClick: () => void) => React.ReactNode
+  save: (name: number) => void
+  initValue: number
+}) => {
+  const [time, setTime] = useState(initValue)
   const [open, setOpen] = useState(false)
   return (
     <>
-      <IconButton
-        onClick={() => {
-          setOpen(true)
-        }}
-      >
-        <Settings />
-      </IconButton>
-      <Modal open={open} onClose={() => setOpen(false)} disableRestoreFocus>
-        <ModalDialog
-          variant="outlined"
-          role="alertdialog"
-          sx={{
-            width: "100%",
-          }}
-          maxWidth={"400px"}
-        >
-          <ModalClose sx={{zIndex: 8}} />
-          <DialogTitle>Settings</DialogTitle>
-          <DialogContent sx={{p: 1}}>
-            <FormControl sx={{mt: 4}}>
-              <FormLabel>Everyone starts with: </FormLabel>
-              <Input
-                type={"number"}
-                endDecorator={"min"}
-                // disabled={room.users[0].timeRemaining !== room.initTime}
-                value={room.initTime / 1000 / 60}
-                onChange={(e) => {
-                  const t = +e.target.value
-                  if (typeof t === "number" && !isNaN(t)) {
-                    room.initTime = t * 1000 * 60
-                    room.users.forEach((user) => {
-                      user.timeRemaining = t * 1000 * 60
-                    })
-                    upsertRoom(room)
-                  }
-                }}
-              />
-            </FormControl>
+      {renderButton(() => {
+        setOpen(true)
+      })}
 
-            <LeaveRoom room={room} />
-          </DialogContent>
-        </ModalDialog>
-      </Modal>
+      <Dialog open={open} setOpen={setOpen} title={"Time"}>
+        <Stack gap={2} mt={2}>
+          <FormControl>
+            <FormLabel>Everyone starts with: </FormLabel>
+            <Input
+              type={"number"}
+              endDecorator={"min"}
+              value={time / 1000 / 60}
+              onChange={(e) => {
+                const t = +e.target.value
+                if (typeof t === "number" && !isNaN(t)) {
+                  setTime(t * 1000 * 60)
+                }
+              }}
+            />
+          </FormControl>
+          <Button
+            onClick={() => {
+              save(time)
+              setOpen(false)
+            }}
+          >
+            Save
+          </Button>
+        </Stack>
+      </Dialog>
+    </>
+  )
+}
+
+const AddUser = ({
+  save,
+  renderButton,
+}: {
+  renderButton: (onClick: () => void) => React.ReactNode
+  save: (name: string) => void
+}) => {
+  const [name, setName] = useState("")
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      {renderButton(() => {
+        setOpen(true)
+      })}
+
+      <Dialog title={"Add Person"} open={open} setOpen={setOpen}>
+        <Stack gap={2}>
+          <FormControl>
+            <Input
+              placeholder="Name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value)
+              }}
+            />
+          </FormControl>
+          <Button
+            onClick={() => {
+              setOpen(false)
+              save(name)
+              setName("")
+            }}
+            disabled={name === ""}
+          >
+            Add
+          </Button>
+        </Stack>
+      </Dialog>
     </>
   )
 }

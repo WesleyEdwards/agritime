@@ -11,13 +11,13 @@ import {
   Stack,
   Typography,
 } from "@mui/joy"
-import {useState} from "react"
-import {useUnauthContext} from "../useAuth"
-import {useNavigate} from "react-router-dom"
-import {api} from "../api"
-import {AccessTime} from "@mui/icons-material"
-import {AutoLoadingButton} from "../components/AutoLoadingButton"
-import {useToast} from "../components/Toast"
+import { useState } from "react"
+import { useUnauthContext } from "../useAuth"
+import { useNavigate } from "react-router-dom"
+import { api } from "../api"
+import { AccessTime } from "@mui/icons-material"
+import { AutoLoadingButton } from "../components/AutoLoadingButton"
+import { useToast } from "../components/Toast"
 import agritimeImg from "../assets/agritime.png"
 
 export const Landing = () => {

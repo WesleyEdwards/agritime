@@ -1,20 +1,10 @@
 import {IosShare, Share, CopyAll} from "@mui/icons-material"
-import {
-  IconButton,
-  Modal,
-  ModalDialog,
-  ModalClose,
-  DialogTitle,
-  DialogContent,
-  Stack,
-  Typography,
-  Card,
-  CardProps,
-} from "@mui/joy"
+import {IconButton, Stack, Typography, Card, CardProps} from "@mui/joy"
 import {useState} from "react"
 import {Room} from "../../shared"
 import {useToast} from "../../components/Toast"
 import {QRCodeShare} from "./qrCode"
+import {Dialog} from "../../components/Dialog"
 
 export const ShareRoom = ({room}: {room: Room}) => {
   const [open, setOpen] = useState(false)
@@ -30,38 +20,25 @@ export const ShareRoom = ({room}: {room: Room}) => {
       >
         {getMobileOperatingSystem() === "iOS" ? <IosShare /> : <Share />}
       </IconButton>
-      <Modal open={open} onClose={() => setOpen(false)} disableRestoreFocus>
-        <ModalDialog
-          variant="outlined"
-          role="alertdialog"
-          sx={{
-            width: "100%",
-          }}
-          maxWidth={"400px"}
-        >
-          <ModalClose sx={{zIndex: 8}} />
-          <DialogTitle>Invite</DialogTitle>
-          <DialogContent sx={{p: 1}}>
-            <Stack gap={2} alignItems={"center"}>
-              <Typography sx={{my: 2, textAlign: "center"}} level="h3">
-                {room.code}
-              </Typography>
-              <QRCodeShare url={url} />
-              <ShareLink
-                url={url}
-                sx={{
-                  display: "flex",
-                  p: 1,
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  flexDirection: "row",
-                  gap: 1,
-                }}
-              />
-            </Stack>
-          </DialogContent>
-        </ModalDialog>
-      </Modal>
+      <Dialog open={open} setOpen={setOpen} title={"Invite"}>
+        <Stack gap={2} alignItems={"center"}>
+          <Typography sx={{my: 2, textAlign: "center"}} level="h3">
+            {room.code}
+          </Typography>
+          <QRCodeShare url={url} />
+          <ShareLink
+            url={url}
+            sx={{
+              display: "flex",
+              p: 1,
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexDirection: "row",
+              gap: 1,
+            }}
+          />
+        </Stack>
+      </Dialog>
     </>
   )
 }

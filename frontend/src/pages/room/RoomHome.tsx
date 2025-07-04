@@ -14,16 +14,15 @@ import {
 } from "@hello-pangea/dnd"
 import {SettingsPage} from "./SettingsPage"
 import {useUnauthContext} from "../../useAuth"
-import {useToast} from "../../components/Toast"
 import {QRCodeShare} from "./qrCode"
+import {UserActions} from "./UserActions"
 
 export const RoomHome = () => {
   const {roomId} = useParams<{roomId: string}>()
   const navigate = useNavigate()
 
-  const toast = useToast()
   const {room, switchTime, reorderUsers, upsertRoom} = useRoom(roomId || "")
-  const {user: me, setUser} = useUnauthContext()
+  const {user: me} = useUnauthContext()
 
   useEffect(() => {
     if (!roomId || room === null) {
@@ -105,23 +104,12 @@ export const RoomHome = () => {
                         <UserTimer
                           dragProps={provided.dragHandleProps}
                           user={user}
-                          editName={
-                            user.id === me.id || user.anonymous
-                              ? (name) => {
-                                  room.users.forEach((u) => {
-                                    if (u.id === user.id) {
-                                      u.name = name
-                                    }
-                                  })
-                                  upsertRoom(room)
-                                  if (user.id === me.id) {
-                                    setUser((prev) => ({...prev, name: name}))
-                                  }
-                                  toast({
-                                    message: "Saved",
-                                  })
-                                }
-                              : undefined
+                          actions={
+                            <UserActions
+                              user={user}
+                              room={room}
+                              upsertRoom={upsertRoom}
+                            />
                           }
                           timingUser={room.timerOn === user.id}
                           switchTime={switchTime}

@@ -3,7 +3,8 @@ import {Outlet} from "react-router-dom"
 import agritimeImg from "../assets/agritime.png"
 
 export const UnAuthLayout = () => {
-  const isLanding = location.pathname.includes("landing")
+  const isLanding =
+    location.pathname.includes("landing") || location.pathname === "/"
   return (
     <Stack
       sx={{
