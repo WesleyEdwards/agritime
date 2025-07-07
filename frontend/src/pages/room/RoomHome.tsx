@@ -14,7 +14,6 @@ import {
 } from "@hello-pangea/dnd"
 import {SettingsPage} from "./SettingsPage"
 import {useUnauthContext} from "../../useAuth"
-import {QRCodeShare} from "./qrCode"
 import {UserActions} from "./UserActions"
 
 export const RoomHome = () => {
@@ -60,32 +59,21 @@ export const RoomHome = () => {
         </Stack>
       }
     >
-      <Divider />
       {!hasMultipleUsers && (
-        <>
-          <Stack gap={2} alignItems={"center"} sx={{my: "2rem"}}>
-            <Typography sx={{textAlign: "center"}}>
-              Share this link with your friends so they can join!
-            </Typography>
-            <QRCodeShare
-              url={`${location.origin}/accept-code?code=${room.code}`}
-            />
-            <Typography level="body-sm">
-              Invite Code: <b>{room.code}</b>
-            </Typography>
-            <ShareLink
-              url={`${location.origin}/accept-code?code=${room.code}`}
-              sx={{
-                display: "flex",
-                p: "4px",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexDirection: "row",
-                gap: 1,
-              }}
-            />
-          </Stack>
-        </>
+        <ShareLink
+          url={`${location.origin}/accept-code?code=${room.code}`}
+          sx={{
+            my: 2,
+            mx: "auto",
+            width: "fit-content",
+            display: "flex",
+            p: "8px",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexDirection: "row",
+            gap: 1,
+          }}
+        />
       )}
 
       <DragDropContext onDragEnd={handleDragEnd}>

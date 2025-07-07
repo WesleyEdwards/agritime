@@ -9,7 +9,7 @@ import {
   MenuItem,
 } from "@mui/joy"
 import {Room, User} from "../../shared"
-import {Autorenew, Edit, MoreVert} from "@mui/icons-material"
+import {Autorenew, Edit, Logout, MoreVert} from "@mui/icons-material"
 import {useToast} from "../../components/Toast"
 import {useState} from "react"
 import {Dialog} from "../../components/Dialog"
@@ -60,14 +60,12 @@ export const UserActions = ({
               if (user.id === me.id) {
                 setUser((prev) => ({...prev, name: name}))
               }
-              toast({
-                message: "Saved",
-              })
+              toast({message: "Saved"})
             }}
             renderButton={(onClick) => (
               <MenuItem onClick={onClick}>
                 <Edit />
-                Change Name
+                Name
               </MenuItem>
             )}
           />
@@ -77,11 +75,7 @@ export const UserActions = ({
             room={room}
             renderButton={(onClick) => (
               <MenuItem onClick={onClick} variant="soft" color="danger">
-                <div
-                  style={{
-                    width: "24px",
-                  }}
-                ></div>
+                <Logout />
                 {user.id === me.id ? "Leave Timer" : "Remove"}
               </MenuItem>
             )}
@@ -92,7 +86,7 @@ export const UserActions = ({
   )
 }
 
-const LeaveTimer = ({
+export const LeaveTimer = ({
   user,
   room,
   renderButton,
@@ -125,22 +119,32 @@ const LeaveTimer = ({
 
 const EditName = ({
   user,
-  setName,
+  setName: saveName,
   renderButton,
 }: {
   user: User
   setName: (n: string) => void
-
   renderButton: (onClick: () => void) => React.ReactNode
 }) => {
   const [open, setOpen] = useState(false)
+  const [name, setName] = useState(user.name)
+
   return (
     <>
       {renderButton(() => {
         setOpen(true)
       })}
 
-      <Dialog title={""} open={open} setOpen={setOpen}>
+      <Dialog
+        title={""}
+        open={open}
+        setOpen={() => {
+          if (name !== user.name) {
+            saveName(name ?? "")
+          }
+          setOpen(false)
+        }}
+      >
         <FormControl>
           <FormLabel>Name</FormLabel>
           <Input
@@ -154,7 +158,7 @@ const EditName = ({
               </IconButton>
             }
             placeholder=""
-            value={user.name}
+            value={name}
             onChange={(e) => {
               setName(e.target.value)
             }}

@@ -10,11 +10,13 @@ import {
   MenuItem,
   Stack,
 } from "@mui/joy"
-import {AccessTime, Add, Settings} from "@mui/icons-material"
+import {AccessTime, Add, Logout, Settings} from "@mui/icons-material"
 import {Room} from "../../shared"
 import React, {useState} from "react"
 import {Dialog} from "../../components/Dialog"
 import {useToast} from "../../components/Toast"
+import {LeaveTimer} from "./UserActions"
+import {useUnauthContext} from "../../useAuth"
 
 export const SettingsPage = ({
   room,
@@ -24,6 +26,8 @@ export const SettingsPage = ({
   upsertRoom: (r: Room) => void
 }) => {
   const toast = useToast()
+  const {user} = useUnauthContext()
+
   return (
     <>
       <Dropdown>
@@ -38,7 +42,7 @@ export const SettingsPage = ({
             renderButton={(onClick) => (
               <MenuItem onClick={onClick}>
                 <Add />
-                Add Person
+                Add People
               </MenuItem>
             )}
             save={(name) => {
@@ -69,6 +73,16 @@ export const SettingsPage = ({
               upsertRoom(room)
               toast({message: "Saved"})
             }}
+          />
+          <LeaveTimer
+            user={user}
+            room={room}
+            renderButton={(onClick) => (
+              <MenuItem onClick={onClick} variant="soft" color="danger">
+                <Logout />
+                Leave Timer
+              </MenuItem>
+            )}
           />
         </Menu>
       </Dropdown>

@@ -27,7 +27,6 @@ export const UserTimer = ({
 
   useEffect(() => {
     if (user.timeRemaining !== timer) {
-      console.log(`Setting timer to ${user.name}`, user.timeRemaining)
       setTimer(user.timeRemaining)
     }
   }, [user.timeRemaining])
@@ -70,14 +69,18 @@ export const UserTimer = ({
           justifyContent={"flex-start"}
           sx={{textAlign: "start"}}
         >
-          <Typography>{user.name || user.id}</Typography>
+          <Typography>{user.name || "Anonymous"}</Typography>
         </Stack>
 
         <Stack direction="row" gap={1} alignItems={"center"}>
           <Typography
             sx={{
-              color: (theme) =>
-                timer < 0 ? theme.vars.palette.danger.softActiveBg : undefined,
+              color: (theme) => {
+                if (timer < 0) {
+                  return theme.vars.palette.danger.softActiveBg
+                }
+                return undefined
+              },
             }}
           >
             {formatTime(timer)}
