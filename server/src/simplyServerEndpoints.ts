@@ -42,14 +42,33 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
         }),
       buildRoute<ServerCtx>("post")
         .path("/create-room")
-        .build(async ({res, db}) => {
+        .withBody({
+          validator: z.object({
+            initTime: z.number(),
+            additionalUsers: z
+              .object({
+                id: z.string(),
+                anonymous: z.boolean(),
+                connected: z.boolean(),
+                name: z.string(),
+              })
+              .array(),
+          }),
+        })
+        .build(async ({res, db, body}) => {
           const room: Room = {
             id: uuidv4(),
             code: generateCode(),
-            initTime: 20 * 60 * 1000,
+            initTime: body.initTime,
             previousSwitch: Date.now(),
             timerOn: null,
-            users: [],
+            users: body.additionalUsers.map((u, i) => ({
+              ...u,
+              connected: false,
+              anonymous: true,
+              timeRemaining: body.initTime,
+              order: i,
+            })),
           }
           db.rooms.set(room.id, room)
           logger?.(`Created room ${room.id}`)
@@ -80,8 +99,17 @@ export const simplyServerEndpoints: Controller<ServerCtx>[] = [
                   timeRemaining: r.initTime,
                   order: len,
                 })
+                r.users = r.users
+                  .sort((a, b) => {
+                    if (a.connected && !b.connected) return -1
+                    if (!a.connected && b.connected) return 1
+                    return 0
+                  })
+                  .map((u, i) => ({...u, order: i}))
                 reconcileTime(r, Date.now())
-                emitEvent(io, {upsertRoom: {room: r}})
+                emitEvent(io, {upsertRoom: {room: r}}, (r) =>
+                  console.log(`NEW ROOM: ${r}`)
+                )
               }
             }
           })

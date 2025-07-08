@@ -5,6 +5,7 @@ import {
   DialogTitle,
   DialogContent,
 } from "@mui/joy"
+import React from "react"
 
 export const Dialog = ({
   children,
@@ -15,7 +16,7 @@ export const Dialog = ({
   children: React.ReactNode
   open: boolean
   setOpen: (o: boolean) => void
-  title: string
+  title: React.ReactNode
 }) => (
   <Modal open={open} onClose={() => setOpen(false)} disableRestoreFocus>
     <ModalDialog

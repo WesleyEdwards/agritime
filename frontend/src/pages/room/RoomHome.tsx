@@ -1,7 +1,7 @@
-import {Button, Divider, Stack, Typography} from "@mui/joy"
+import {Button, Stack, Typography} from "@mui/joy"
 import {useRoom} from "../../hooks/useRooms"
 import {useNavigate, useParams} from "react-router-dom"
-import {useEffect} from "react"
+import {useEffect, useState} from "react"
 import {PageLayout} from "../../layout/PageLayout"
 import {ShareLink, ShareRoom} from "./ShareRoom"
 import {Spinner} from "../../components/spinner"
@@ -15,6 +15,9 @@ import {
 import {SettingsPage} from "./SettingsPage"
 import {useUnauthContext} from "../../useAuth"
 import {UserActions} from "./UserActions"
+import {Dialog} from "../../components/Dialog"
+import {Room} from "../../shared"
+import agritimeEmoji from "../../assets/agritime-sundial-nobg.png"
 
 export const RoomHome = () => {
   const {roomId} = useParams<{roomId: string}>()
@@ -59,22 +62,7 @@ export const RoomHome = () => {
         </Stack>
       }
     >
-      {!hasMultipleUsers && (
-        <ShareLink
-          url={`${location.origin}/accept-code?code=${room.code}`}
-          sx={{
-            my: 2,
-            mx: "auto",
-            width: "fit-content",
-            display: "flex",
-            p: "8px",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexDirection: "row",
-            gap: 1,
-          }}
-        />
-      )}
+      <WelcomeDialog room={room} />
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="userTimers">
@@ -129,5 +117,65 @@ export const RoomHome = () => {
         </Button>
       )}
     </PageLayout>
+  )
+}
+
+const WelcomeDialog = ({room}: {room: Room}) => {
+  const [seeState, setSeeState] = useState<"hasSeen" | "seeing" | "hasNotSeen">(
+    "hasNotSeen"
+  )
+
+  useEffect(() => {
+    if (
+      room.users.filter((u) => u.connected).length === 1 &&
+      seeState !== "hasSeen"
+    ) {
+      setSeeState("seeing")
+    }
+  }, [room.users])
+
+  return (
+    <>
+      <Dialog
+        open={seeState === "seeing"}
+        setOpen={() => setSeeState("hasSeen")}
+        title={
+          <Typography
+            endDecorator={
+              <img src={agritimeEmoji} width={"16px"} height={"16px"} />
+            }
+          >
+            Welcome to your timer!
+          </Typography>
+        }
+      >
+        <Stack gap={4} mt={4}>
+          <Typography textAlign={"center"}>
+            You can share this link so your friends can join
+          </Typography>
+          <ShareLink
+            url={`${location.origin}/accept-code?code=${room.code}`}
+            sx={{
+              my: 2,
+              mx: 0,
+              width: "fit-content",
+              display: "flex",
+              p: "8px",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexDirection: "row",
+              gap: 1,
+            }}
+          />
+          <Button
+            onClick={() => {
+              setSeeState("hasSeen")
+            }}
+          >
+            Got it!
+          </Button>
+        </Stack>
+      </Dialog>
+    </>
   )
 }

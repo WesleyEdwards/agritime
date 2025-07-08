@@ -1,5 +1,23 @@
 // Generate a random code of 5 char
 
+import {Autorenew} from "@mui/icons-material"
+import {IconButton} from "@mui/joy"
+
+export const RandomNameEndAdornment = ({
+  setName,
+}: {
+  setName: (n: string) => void
+}) => {
+  return (
+    <IconButton
+      onClick={() => {
+        setName(generateRandomName())
+      }}
+    >
+      <Autorenew />
+    </IconButton>
+  )
+}
 
 // Creates a name for a user, "Anonymous <random animal name>"
 export const generateRandomName = () => {

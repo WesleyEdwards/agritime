@@ -1,16 +1,18 @@
 import {Stack, Typography} from "@mui/joy"
-import {Outlet} from "react-router-dom"
+import {Outlet, useLocation} from "react-router-dom"
 import agritimeImg from "../assets/agritime.png"
+import {useMemo} from "react"
 
 export const UnAuthLayout = () => {
-  const isLanding =
-    location.pathname.includes("landing") || location.pathname === "/"
+  const location = useLocation()
+
+  const isLanding = useMemo(
+    () => location.pathname.includes("landing") || location.pathname === "/",
+    [location]
+  )
+
   return (
-    <Stack
-      sx={{
-        minHeight: "100vh",
-      }}
-    >
+    <Stack sx={{minHeight: "100vh"}}>
       {!isLanding && (
         <Stack
           direction="row"

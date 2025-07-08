@@ -90,7 +90,7 @@ export const SettingsPage = ({
   )
 }
 
-const StartingTime = ({
+export const StartingTime = ({
   save,
   renderButton,
   initValue,

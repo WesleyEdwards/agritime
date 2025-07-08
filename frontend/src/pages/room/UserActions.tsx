@@ -9,11 +9,11 @@ import {
   MenuItem,
 } from "@mui/joy"
 import {Room, User} from "../../shared"
-import {Autorenew, Edit, Logout, MoreVert} from "@mui/icons-material"
+import {Edit, Logout, MoreVert} from "@mui/icons-material"
 import {useToast} from "../../components/Toast"
 import {useState} from "react"
 import {Dialog} from "../../components/Dialog"
-import {generateRandomName} from "../../utils"
+import {RandomNameEndAdornment} from "../../utils"
 import {useUnauthContext} from "../../useAuth"
 import {useNavigate} from "react-router-dom"
 import {api} from "../../api"
@@ -148,15 +148,7 @@ const EditName = ({
         <FormControl>
           <FormLabel>Name</FormLabel>
           <Input
-            endDecorator={
-              <IconButton
-                onClick={() => {
-                  setName(generateRandomName())
-                }}
-              >
-                <Autorenew />
-              </IconButton>
-            }
+            endDecorator={<RandomNameEndAdornment setName={setName} />}
             placeholder=""
             value={name}
             onChange={(e) => {

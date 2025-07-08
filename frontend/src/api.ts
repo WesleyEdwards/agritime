@@ -20,7 +20,7 @@ export const api = {
       body: JSON.stringify(body),
     }).then((r) => r.json()),
 
-  createRoom: (body: {user: User}): Promise<Room> =>
+  createRoom: (body: {additionalUsers: User[], initTime: number}): Promise<Room> =>
     fetch(`${import.meta.env.VITE_BACKEND_URL}/rest/create-room`, {
       method: "POST",
       headers: {
