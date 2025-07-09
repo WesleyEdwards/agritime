@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "build:prod": "node build.js",
-    "deploy:prod": "npm run build:prod && scp dist/index.js edwardsDell:/home/wesley/agritime/server/",
+    "deploy:prod": "npm run build:prod && scp dist/index.js edwardsDell:/srv/agritime && ssh edwardsDell 'sudo /bin/systemctl restart agritime.service'",
     "start": "npm run build && cross-env NODE_ENV=dev && cd lib/src && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

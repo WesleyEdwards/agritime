@@ -82,7 +82,7 @@ const server1 = createSimplyServer<ServerCtx>({
   controllers: simplyServerEndpoints,
   afterGenerateEndpoints: (app) => {
     app.get("/", (req, res) => {
-      res.send("Welcome to agritime!")
+      res.send("Welcome to Agritime!")
     })
   },
 })
