@@ -151,7 +151,7 @@ const animalNameByHash = (s: string) => {
     hash = (hash << 5) - hash + char.charCodeAt(0)
     hash |= 0 // Constrain to 32bit integer
   }
-  const idx = hash % (animalNames.length - 1)
+  const idx = Math.abs(hash) % (animalNames.length - 1)
 
   return `Anonymous ${animalNames[idx]}`
 }
