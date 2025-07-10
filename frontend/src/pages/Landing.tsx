@@ -115,18 +115,27 @@ const NewTimerButton = () => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
-  const [time, setTime] = useState(20 * 1000 * 60)
+  const [time, setTime] = useState<number | null>(20 * 1000 * 60)
 
   const {user, setUser} = useUnauthContext()
   const [players, setPlayers] = useState<User[]>([])
 
   const handleCreate = () => {
+    if (!time) return
     return api
       .createRoom({
-        additionalUsers: players.filter((p) => !!p.name),
+        additionalUsers: players
+          .filter((p) => !!p.name)
+          .map((p) => {
+            p.timeRemaining = time
+            return p
+          }),
         initTime: time,
       })
       .then((room) => {
+        if (!user.name) {
+          setUser((prev) => ({...prev, name: "Me"}))
+        }
         navigate(`/accept-code?code=${room.code}`)
       })
   }
@@ -148,6 +157,7 @@ const NewTimerButton = () => {
         setOpen={() => {
           setPlayers([])
           setTime(20 * 1000 * 60)
+          setOpen(false)
         }}
       >
         <Stack gap={3}>
@@ -161,12 +171,12 @@ const NewTimerButton = () => {
             <Input
               type={"number"}
               endDecorator={"min"}
-              value={time / 1000 / 60}
+              value={time ? time / 1000 / 60 : ""}
               onChange={(e) => {
                 const t = +e.target.value
                 if (typeof t === "number" && !isNaN(t)) {
                   setTime(t * 1000 * 60)
-                }
+                } else setTime(null)
               }}
             />
           </FormControl>
@@ -188,6 +198,7 @@ const NewTimerButton = () => {
                 setUser((prev) => ({...prev, name: e.target.value}))
               }}
             />
+
             {players.map((player) => (
               <Input
                 key={player.id}
@@ -225,7 +236,7 @@ const NewTimerButton = () => {
                     name: "",
                     anonymous: true,
                     connected: false,
-                    timeRemaining: time,
+                    timeRemaining: time ?? 0,
                     order: players.length,
                     id: crypto.randomUUID(),
                   },
@@ -236,7 +247,11 @@ const NewTimerButton = () => {
             </Button>
           </Stack>
 
-          <AutoLoadingButton sx={{textWrap: "nowrap"}} onClick={handleCreate}>
+          <AutoLoadingButton
+            disabled={!time}
+            sx={{textWrap: "nowrap"}}
+            onClick={handleCreate}
+          >
             Create Timer
           </AutoLoadingButton>
         </Stack>
@@ -244,18 +259,3 @@ const NewTimerButton = () => {
     </>
   )
 }
-
-// <FormControl>
-//   <FormLabel>How many players?</FormLabel>
-//   <Input
-//     type="number"
-//     endDecorator={"players"}
-//     value={playerCount}
-//     onChange={(e) => {
-//       const t = +e.target.value
-//       if (typeof t === "number" && !isNaN(t)) {
-//         setPlayerCount(t)
-//       }
-//     }}
-//   />
-// </FormControl>

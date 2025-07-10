@@ -40,10 +40,15 @@ export const AcceptCode = () => {
   }
 
   useEffect(() => {
-    if (user.name) {
-      joinRoom()
+    if (room && user.name) {
+      const iMayBeIn = room.users.some(
+        (u) => u.name?.toLowerCase() === user.name?.toLowerCase()
+      )
+      if (!iMayBeIn) {
+        joinRoom()
+      }
     }
-  }, [decodedCode])
+  }, [decodedCode, room])
 
   useEffect(() => {
     api.getRoom({code}).then(setRoom)

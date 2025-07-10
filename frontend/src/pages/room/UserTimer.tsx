@@ -3,6 +3,8 @@ import {Card, Stack, Typography, IconButton} from "@mui/joy"
 import React, {useState, useEffect, useRef} from "react"
 import {User} from "../../shared"
 import {DraggableProvidedDragHandleProps} from "@hello-pangea/dnd"
+import {animalNames} from "../../utils"
+import {useUnauthContext} from "../../useAuth"
 
 export const UserTimer = ({
   user,
@@ -18,6 +20,7 @@ export const UserTimer = ({
   dragProps: DraggableProvidedDragHandleProps | null
 }) => {
   const [timer, setTimer] = useState<number>(user.timeRemaining)
+  const {user: me} = useUnauthContext()
 
   useInterval(() => {
     if (timingUser) {
@@ -69,7 +72,17 @@ export const UserTimer = ({
           justifyContent={"flex-start"}
           sx={{textAlign: "start"}}
         >
-          <Typography>{user.name || "Anonymous"}</Typography>
+          <Typography>
+            {(() => {
+              if (user.name === "Me" && me.id !== user.id) {
+                return animalNameByHash(user.id)
+              }
+              if (!user.name) {
+                return animalNameByHash(user.id)
+              }
+              return user.name
+            })()}
+          </Typography>
         </Stack>
 
         <Stack direction="row" gap={1} alignItems={"center"}>
@@ -130,4 +143,15 @@ const useInterval = (callback: () => void, ms: number) => {
       clearInterval(id)
     }
   }, [ms])
+}
+
+const animalNameByHash = (s: string) => {
+  let hash = 0
+  for (const char of s) {
+    hash = (hash << 5) - hash + char.charCodeAt(0)
+    hash |= 0 // Constrain to 32bit integer
+  }
+  const idx = hash % (animalNames.length - 1)
+
+  return `Anonymous ${animalNames[idx]}`
 }

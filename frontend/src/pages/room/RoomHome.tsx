@@ -18,6 +18,7 @@ import {UserActions} from "./UserActions"
 import {Dialog} from "../../components/Dialog"
 import {Room} from "../../shared"
 import agritimeEmoji from "../../assets/agritime-sundial-nobg.png"
+import {QRCodeShare} from "./qrCode"
 
 export const RoomHome = () => {
   const {roomId} = useParams<{roomId: string}>()
@@ -149,7 +150,7 @@ const WelcomeDialog = ({room}: {room: Room}) => {
           </Typography>
         }
       >
-        <Stack gap={4} mt={4}>
+        <Stack gap={4} mt={4} alignItems={"center"}>
           <Typography textAlign={"center"}>
             You can share this link so your friends can join
           </Typography>
@@ -167,6 +168,10 @@ const WelcomeDialog = ({room}: {room: Room}) => {
               gap: 1,
             }}
           />
+          <QRCodeShare
+            url={`${location.origin}/accept-code?code=${room.code}`}
+          />
+
           <Button
             onClick={() => {
               setSeeState("hasSeen")
