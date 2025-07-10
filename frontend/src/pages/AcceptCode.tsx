@@ -104,7 +104,11 @@ export const AcceptCode = () => {
           <Button
             sx={{alignSelf: "center", width: "12rem"}}
             onClick={() => {
-              setRoom(undefined)
+              if (user.name) {
+                joinRoom()
+              } else {
+                setRoom(undefined)
+              }
             }}
             variant="soft"
           >
