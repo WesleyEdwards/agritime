@@ -44,7 +44,7 @@ export const UserActions = ({
   return (
     <>
       <Dropdown>
-        <MenuButton slots={{root: IconButton}} slotProps={{root: {size: "sm"}}}>
+        <MenuButton slots={{root: IconButton}} slotProps={{root: {size: "md"}}}>
           <MoreVert />
         </MenuButton>
         <Menu placement="bottom-start" keepMounted>

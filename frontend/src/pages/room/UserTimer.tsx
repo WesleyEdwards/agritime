@@ -5,6 +5,7 @@ import {User} from "../../shared"
 import {DraggableProvidedDragHandleProps} from "@hello-pangea/dnd"
 import {animalNames} from "../../utils"
 import {useUnauthContext} from "../../useAuth"
+import agritimeImg from "../../assets/agritime.png"
 
 export const UserTimer = ({
   user,
@@ -39,7 +40,8 @@ export const UserTimer = ({
       key={user.id}
       variant="outlined"
       sx={(theme) => ({
-        p: 2,
+        p: 0,
+        height: "5rem",
         mt: 2,
         borderColor: timingUser
           ? theme.vars.palette.success.outlinedBorder
@@ -52,27 +54,31 @@ export const UserTimer = ({
             position: "absolute",
             width: "8px",
             opacity: 0.8,
-            margin: "-12px 0px 0px -12px",
+            margin: "4px 8px",
           }}
           color="success"
         />
       )}
       <Stack
         key={user.id}
+        sx={{ml: "4px"}}
         direction="row"
+        height="100%"
         justifyContent={"space-between"}
         gap={0}
         alignItems="center"
       >
         {actions}
+
         <Stack
           {...dragProps}
           direction="row"
           width="100%"
+          height="100%"
           justifyContent={"flex-start"}
-          sx={{textAlign: "start"}}
+          sx={{textAlign: "center", ml: "4px"}}
         >
-          <Typography>
+          <Typography alignSelf="center">
             {(() => {
               if (user.name === "Me" && me.id !== user.id) {
                 return animalNameByHash(user.id)
@@ -83,6 +89,15 @@ export const UserTimer = ({
               return user.name
             })()}
           </Typography>
+
+          {timingUser && (
+            <img
+              style={{marginLeft: "1rem", alignSelf: "center"}}
+              src={agritimeImg}
+              width="50px"
+              height="50px"
+            />
+          )}
         </Stack>
 
         <Stack direction="row" gap={1} alignItems={"center"}>
@@ -99,6 +114,7 @@ export const UserTimer = ({
             {formatTime(timer)}
           </Typography>
           <IconButton
+            sx={{padding: "1rem", mr: "0.5rem"}}
             onClick={() => {
               if (timingUser) {
                 switchTime(null)

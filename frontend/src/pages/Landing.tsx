@@ -19,10 +19,10 @@ import {api} from "../api"
 import {AccessTime, Add} from "@mui/icons-material"
 import {AutoLoadingButton} from "../components/AutoLoadingButton"
 import {useToast} from "../components/Toast"
-import agritimeImg from "../assets/agritime.png"
 import {Dialog} from "../components/Dialog"
 import {User} from "../shared"
 import {RandomNameEndAdornment} from "../utils"
+import agritimeImg from "../assets/agritime.png"
 
 export const Landing = () => {
   return (
@@ -187,8 +187,7 @@ const NewTimerButton = () => {
               endDecorator={
                 <RandomNameEndAdornment
                   setName={(name) => {
-                    user.name = name
-                    setUser(user)
+                    setUser((prev) => ({...prev, name}))
                   }}
                 />
               }
