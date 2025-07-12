@@ -2,10 +2,11 @@ import {RouterProvider} from "react-router-dom"
 import {CssBaseline, CssVarsProvider} from "@mui/joy"
 import {unauthRoutes} from "./routes"
 import {SocketContextProvider} from "./sockets"
-import {UnauthContext, usePersistentState} from "./useAuth"
+import {UnauthContext} from "./useAuth"
 import {User} from "./shared"
 import {ToastProvider} from "./components/Toast"
 import theme from "./theme"
+import {usePersistentState} from "./utils"
 
 export default function App() {
   const [user, setUser] = usePersistentState<User>("user-asdf", {
@@ -16,7 +17,6 @@ export default function App() {
     order: -1,
     id: crypto.randomUUID(),
   })
-
 
   return (
     <CssVarsProvider defaultMode="dark" theme={theme}>
