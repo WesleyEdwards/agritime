@@ -19,10 +19,14 @@ import {Dialog} from "../../components/Dialog"
 import {Room} from "../../shared"
 import agritimeEmoji from "../../assets/agritime-sundial-nobg.png"
 import {QRCodeShare} from "./qrCode"
+import {NavDrawer} from "../../layout/NavDrawer"
+import agritimeImg from "../../assets/agritime.png"
+import {useToast} from "../../components/Toast"
 
 export const RoomHome = () => {
   const {roomId} = useParams<{roomId: string}>()
   const navigate = useNavigate()
+  const toast = useToast()
 
   const {room, switchTime, reorderUsers, upsertRoom} = useRoom(roomId || "")
   const {user: me} = useUnauthContext()
@@ -33,6 +37,12 @@ export const RoomHome = () => {
       return
     }
   }, [roomId, room])
+
+  useEffect(() => {
+    if (room?.timerOn === me.id) {
+      toast({message: "Your turn!"})
+    }
+  }, [room?.timerOn])
 
   if (!room) {
     return <Spinner />
@@ -49,75 +59,104 @@ export const RoomHome = () => {
     reorderUsers(newOrder)
   }
 
-  const hasMultipleUsers = room.users.length > 1
-
   return (
-    <PageLayout
-      title={
-        <Stack direction={"row"} justifyContent={"space-between"}>
-          <Typography level="h2">Timer</Typography>
-          <Stack direction="row" gap="1rem">
-            <SettingsPage room={room} upsertRoom={upsertRoom} />
-            <ShareRoom room={room} />
-          </Stack>
+    <>
+      <Stack
+        direction="row"
+        padding={1}
+        justifyContent="space-between"
+        sx={(theme) => ({
+          backgroundColor: theme.palette.background.surface,
+        })}
+      >
+        <Stack direction="row" gap="4px">
+          <img style={{height: "4rem"}} src={agritimeImg}></img>
+          <Typography
+            level={"h1"}
+            alignContent={"center"}
+            sx={{color: (theme) => theme.palette.primary[400]}}
+          >
+            Agritime
+          </Typography>
         </Stack>
-      }
-    >
-      <WelcomeDialog room={room} />
+        {/* <AppSettings /> */}
+        <NavDrawer room={room} />
+      </Stack>
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="userTimers">
-          {(provided) => (
-            <Stack ref={provided.innerRef} {...provided.droppableProps}>
-              {room.users
-                .sort((a, b) => {
-                  if (a.order < b.order) return -1
-                  return 1
-                })
-                .map((user, index) => (
-                  <Draggable key={user.id} draggableId={user.id} index={index}>
-                    {(provided) => (
-                      <div ref={provided.innerRef} {...provided.draggableProps}>
-                        <UserTimer
-                          dragProps={provided.dragHandleProps}
-                          user={user}
-                          actions={
-                            <UserActions
-                              user={user}
-                              room={room}
-                              upsertRoom={upsertRoom}
-                            />
-                          }
-                          timingUser={room.timerOn === user.id}
-                          switchTime={switchTime}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-              {provided.placeholder}
+      <PageLayout
+        title={
+          <Stack direction={"row"} justifyContent={"space-between"}>
+            <Typography level="h2">Timer</Typography>
+            <Stack direction="row" gap="1rem">
+              <SettingsPage room={room} upsertRoom={upsertRoom} />
+              <ShareRoom room={room} />
             </Stack>
-          )}
-        </Droppable>
-      </DragDropContext>
+          </Stack>
+        }
+      >
+        <WelcomeDialog room={room} />
 
-      {hasMultipleUsers && (
-        <Button
-          disabled={room.timerOn !== me.id}
-          onClick={() => {
-            const current = room.users.indexOf(
-              room.users.find((u) => u.id === room.timerOn) ?? room.users[0]
-            )
-            const idx = (current + 1) % room.users.length
-            switchTime(room.users[idx])
-          }}
-          size="lg"
-          sx={{mt: "4rem", width: "100%"}}
-        >
-          Pass Turn!
-        </Button>
-      )}
-    </PageLayout>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="userTimers">
+            {(provided) => (
+              <Stack ref={provided.innerRef} {...provided.droppableProps}>
+                {room.users
+                  .sort((a, b) => {
+                    if (a.order < b.order) return -1
+                    return 1
+                  })
+                  .map((user, index) => (
+                    <Draggable
+                      key={user.id}
+                      draggableId={user.id}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                        >
+                          <UserTimer
+                            dragProps={provided.dragHandleProps}
+                            user={user}
+                            actions={
+                              <UserActions
+                                user={user}
+                                room={room}
+                                upsertRoom={upsertRoom}
+                              />
+                            }
+                            timingUser={room.timerOn === user.id}
+                            switchTime={switchTime}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
+              </Stack>
+            )}
+          </Droppable>
+        </DragDropContext>
+
+        {room.users.length > 1 && (
+          <Button
+            disabled={room.timerOn !== me.id}
+            onClick={() => {
+              const current = room.users.indexOf(
+                room.users.find((u) => u.id === room.timerOn) ?? room.users[0]
+              )
+              const idx = (current + 1) % room.users.length
+              switchTime(room.users[idx])
+            }}
+            size="lg"
+            sx={{mt: "4rem", width: "100%"}}
+          >
+            Pass Turn!
+          </Button>
+        )}
+      </PageLayout>
+    </>
   )
 }
 
@@ -150,7 +189,7 @@ const WelcomeDialog = ({room}: {room: Room}) => {
           </Typography>
         }
       >
-        <Stack gap={4} mt={4} alignItems={"center"}>
+        <Stack gap={2} mt={4} alignItems={"center"}>
           <Typography textAlign={"center"}>
             You can share this link so your friends can join
           </Typography>
@@ -173,6 +212,7 @@ const WelcomeDialog = ({room}: {room: Room}) => {
           />
 
           <Button
+            sx={{width: "100%"}}
             onClick={() => {
               setSeeState("hasSeen")
             }}

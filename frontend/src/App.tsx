@@ -17,6 +17,7 @@ export default function App() {
     id: crypto.randomUUID(),
   })
 
+
   return (
     <CssVarsProvider defaultMode="dark" theme={theme}>
       <CssBaseline />

@@ -5,7 +5,7 @@ import {User} from "../../shared"
 import {DraggableProvidedDragHandleProps} from "@hello-pangea/dnd"
 import {animalNames} from "../../utils"
 import {useUnauthContext} from "../../useAuth"
-import agritimeImg from "../../assets/agritime.png"
+import agritimeImg from "../../assets/agritime-sundial-nobg.png"
 
 export const UserTimer = ({
   user,
@@ -76,9 +76,21 @@ export const UserTimer = ({
           width="100%"
           height="100%"
           justifyContent={"flex-start"}
-          sx={{textAlign: "center", ml: "4px"}}
+          sx={{
+            textAlign: "center",
+            ml: "4px",
+
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+          }}
         >
-          <Typography alignSelf="center">
+          <Typography
+            alignSelf="center"
+            sx={{
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+            }}
+          >
             {(() => {
               if (user.name === "Me" && me.id !== user.id) {
                 return animalNameByHash(user.id)
@@ -92,10 +104,10 @@ export const UserTimer = ({
 
           {timingUser && (
             <img
-              style={{marginLeft: "1rem", alignSelf: "center"}}
+              style={{alignSelf: "center", marginLeft: "4px"}}
               src={agritimeImg}
-              width="50px"
-              height="50px"
+              width="30px"
+              height="30px"
             />
           )}
         </Stack>
@@ -103,6 +115,7 @@ export const UserTimer = ({
         <Stack direction="row" gap={1} alignItems={"center"}>
           <Typography
             sx={{
+              width: "3rem",
               color: (theme) => {
                 if (timer < 0) {
                   return theme.vars.palette.danger.softActiveBg

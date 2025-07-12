@@ -137,7 +137,7 @@ export const StartingTime = ({
   )
 }
 
-const AddUser = ({
+export const AddUser = ({
   save,
   renderButton,
 }: {

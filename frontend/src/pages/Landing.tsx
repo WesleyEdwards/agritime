@@ -32,7 +32,10 @@ export const Landing = () => {
       sx={{textAlign: "center"}}
       justifyContent={"center"}
     >
-      <Typography sx={{mt: 2}} level="h2">
+      <Typography
+        level="h2"
+        sx={{mt: 2, color: (theme) => theme.palette.primary[400]}}
+      >
         Agritime
       </Typography>
       <img src={agritimeImg} width="150px" height="150px" />

@@ -10,12 +10,6 @@ import {
 } from "react"
 import {User} from "./shared"
 
-type AuthContextType = {}
-
-export const AuthContext = createContext<AuthContextType>(
-  {} as unknown as AuthContextType
-)
-
 type UnauthContext = {
   user: User
   setUser: Dispatch<SetStateAction<User>>
@@ -27,11 +21,6 @@ export const UnauthContext = createContext<UnauthContext>(
 
 export const useUnauthContext = () => {
   const ctx = useContext(UnauthContext)
-  return ctx
-}
-
-export const useAuthContext = () => {
-  const ctx = useContext(AuthContext)
   return ctx
 }
 
