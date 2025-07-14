@@ -19,7 +19,7 @@ const theme = extendTheme({
           "700": "#5d4037",
           "800": "#4e342e",
           "900": "#3e2723",
-          outlinedHoverBorder: "white", // TODO
+          outlinedHoverBorder: "white",
         },
       },
     },
@@ -36,6 +36,7 @@ const theme = extendTheme({
           "700": "#5d4037",
           "800": "#4e342e",
           "900": "#3e2723",
+          outlinedHoverBorder: "white",
         },
       },
     },
@@ -49,6 +50,9 @@ const theme = extendTheme({
       styleOverrides: {
         root: () => ({
           borderRadius: "100rem",
+          ":hover": {
+            borderColor: "currentColor",
+          },
         }),
       },
     },

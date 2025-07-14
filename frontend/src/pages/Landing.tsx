@@ -43,12 +43,12 @@ export const Landing = () => {
       <NewTimerButton />
 
       <Divider sx={{my: 4}}>Or</Divider>
-      <JoinAroom />
+      <JoinRoom />
     </Stack>
   )
 }
 
-const JoinAroom = () => {
+const JoinRoom = () => {
   const [code, setCode] = useState("")
   const [open, setOpen] = useState(false)
   const toast = useToast()
@@ -69,10 +69,8 @@ const JoinAroom = () => {
         <ModalDialog
           variant="outlined"
           role="alertdialog"
-          sx={{
-            width: "100%",
-          }}
-          maxWidth={"400px"}
+          sx={{width: "100%"}}
+          maxWidth="400px"
         >
           <ModalClose sx={{zIndex: 8}} />
           <DialogTitle>Timer Code</DialogTitle>
@@ -195,7 +193,7 @@ const NewTimerButton = () => {
                 />
               }
               value={user.name}
-              placeholder="Me"
+              placeholder=""
               onChange={(e) => {
                 setUser((prev) => ({...prev, name: e.target.value}))
               }}

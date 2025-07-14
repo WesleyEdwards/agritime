@@ -1,4 +1,5 @@
 import {
+  Button,
   Dropdown,
   FormControl,
   FormLabel,
@@ -139,9 +140,7 @@ const EditName = ({
         title={""}
         open={open}
         setOpen={() => {
-          if (name !== user.name) {
-            saveName(name ?? "")
-          }
+          setName(user.name)
           setOpen(false)
         }}
       >
@@ -156,6 +155,15 @@ const EditName = ({
             }}
           />
         </FormControl>
+        <Button
+        sx={{mt: 2}}
+          onClick={() => {
+            saveName(name ?? "")
+            setOpen(false)
+          }}
+        >
+          Save
+        </Button>
       </Dialog>
     </>
   )

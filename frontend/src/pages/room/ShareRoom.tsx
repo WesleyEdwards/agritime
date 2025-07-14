@@ -22,9 +22,12 @@ export const ShareRoom = ({room}: {room: Room}) => {
       </IconButton>
       <Dialog open={open} setOpen={setOpen} title={"Invite"}>
         <Stack gap={2} alignItems={"center"}>
-          <Typography sx={{my: 2, textAlign: "center"}} level="h3">
-            {room.code}
-          </Typography>
+          <Stack>
+            <Typography level="body-sm">Share Code</Typography>
+            <Typography sx={{mt: 1, mb: 2, textAlign: "center"}} level="h3">
+              {room.code}
+            </Typography>
+          </Stack>
           <QRCodeShare url={url} />
           <ShareLink
             url={url}
