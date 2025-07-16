@@ -1,4 +1,8 @@
-# Agritime
+# Agritime 
+
+https://app.agritime.wesleyedwards.xyz
+
+## Overview
 
 There's better way to spend a relaxing Sunday afternoon than by engaging in an intensely competitive game with those I most love.
 
@@ -6,7 +10,7 @@ But there's a recurring problem.
 
 My dad takes <em>really</em>, <em>really</em>, <b>REALLY</b> long turns sometimes. Especially while playing [Agricola](<https://en.wikipedia.org/wiki/Agricola_(board_game)>). He's'... strategic.
 
-So I built <b>Agritime</b>— a multi-player chess clock that keeps everyone (especially Dad) honest. Agritime tracks the amount of time each player takes over the course of the entire game. No more guessing. No more waiting forever.
+So I built [Agritime](https://app.agritime.wesleyedwards.xyz)— a multi-player chess clock that keeps everyone (especially Dad) honest. Agritime tracks the amount of time each player takes over the course of the entire game. No more guessing. No more waiting forever.
 
 ## Why not use any other chess clock?
 
