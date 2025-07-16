@@ -40,7 +40,7 @@ export const WelcomeDialog = ({room}: {room: Room}) => {
             You can share this link so your friends can join
           </Typography>
           <ShareLink
-            url={`${location.origin}/accept-code?code=${room.code}`}
+            code={room.code}
             sx={{
               my: 2,
               mx: 0,

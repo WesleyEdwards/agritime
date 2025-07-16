@@ -17,6 +17,7 @@ import {useState} from "react"
 import {LeaveTimer} from "../pages/room/UserActions"
 import {Room} from "../shared"
 import {useUnauthContext} from "../useAuth"
+import {GitHub} from "@mui/icons-material"
 
 export function NavDrawer({room}: {room: Room}) {
   const {user} = useUnauthContext()
@@ -28,7 +29,12 @@ export function NavDrawer({room}: {room: Room}) {
   const {mode, setMode} = useColorScheme()
 
   return (
-    <Box sx={{display: "flex"}}>
+    <Box sx={{display: "flex", alignItems: "center", gap: 2}}>
+      <a target="_blank" href="https://github.com/WesleyEdwards/Agritime">
+        <IconButton variant="plain" disabled>
+          <GitHub />
+        </IconButton>
+      </a>
       <IconButton
         onClick={() => {
           setOpen(true)

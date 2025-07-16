@@ -36,9 +36,9 @@ export const Landing = () => {
       </Typography>
       <img src={agritimeImg} width="150px" height="150px" />
 
-
-      <Typography sx={{mb: 4}} level="h4">A multi-player chess timer</Typography>
-
+      <Typography sx={{mb: 4}} level="h4">
+        A multi-player chess clock
+      </Typography>
 
       <Typography>Create a timer to get started!</Typography>
 
