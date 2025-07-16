@@ -1,24 +1,25 @@
 # Agritime
 
-There's nothing better than spending a Sunday afternoon relaxing by engaging in an intensely competitive game with those I most love.
+There's better way to spend a relaxing Sunday afternoon than by engaging in an intensely competitive game with those I most love.
 
-But there's a problem.
+But there's a recurring problem.
 
-My Dad takes really, Really, REALLY long turns sometimes. Especially while playing [Agricola](<https://en.wikipedia.org/wiki/Agricola_(board_game)>). He is quite... strategic.
+My dad takes <em>really</em>, <em>really</em>, <b>REALLY</b> long turns sometimes. Especially while playing [Agricola](<https://en.wikipedia.org/wiki/Agricola_(board_game)>). He's'... strategic.
 
-Enter <b>Agritime</b>— a multi-player chess clock that keeps Dad honest. Agritime keeps track of the amount of time each player has taken in the entirety of the game. By using Agritime, we now know just how much time we each take throughout the game.
+So I built <b>Agritime</b>— a multi-player chess clock that keeps everyone (especially Dad) honest. Agritime tracks the amount of time each player takes over the course of the entire game. No more guessing. No more waiting forever.
 
-## Yet another chess clock??
+## Why not use any other chess clock?
 
-Yes. I searched, but never found a multi-player chess clock that fit our needs.
+I searched, but never found a multi-player chess clock that fit our needs.
 
-Agritime supports the following:
+So I made one that has:
 
-- No ads, No account, no subscriptions
-- Multiple players (up to... infinity?)
-- Only 1 device needed, but seamless sharing/inviting is supported
-- Easy to reorder turn-order by drag-n-drop
-- Easy to stop, start, and change timer
+- 🧘 No ads. No logins. No subscriptions.
+- 👥 Supports any number of players.
+- 📱 Only one device required — or share/invite others in seconds.
+- 🔁 Reorder turn order easily with drag-and-drop.
+- ⏱ Start, stop, or edit timers with ease.
+
 
  <br />
  
