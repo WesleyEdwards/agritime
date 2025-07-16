@@ -20,3 +20,6 @@ Agritime supports the following:
 - Easy to reorder turn-order by drag-n-drop
 - Easy to stop, start, and change timer
 
+ <br />
+ 
+<img width="418" height="757" alt="Screenshot from 2025-07-15 20-29-49" src="https://github.com/user-attachments/assets/6841f00d-19ec-4183-b90b-b3c38bbc9138" />
