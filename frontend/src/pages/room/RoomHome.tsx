@@ -1,7 +1,7 @@
-import {Button, Stack, Typography} from "@mui/joy"
+import {Button, IconButton, Stack, Typography} from "@mui/joy"
 import {useRoom} from "../../hooks/useRooms"
 import {useNavigate, useParams} from "react-router-dom"
-import {useEffect, useState} from "react"
+import {useEffect} from "react"
 import {PageLayout} from "../../layout/PageLayout"
 import {ShareLink, ShareRoom} from "./ShareRoom"
 import {Spinner} from "../../components/spinner"
@@ -15,13 +15,12 @@ import {
 import {SettingsPage} from "./SettingsPage"
 import {useUnauthContext} from "../../useAuth"
 import {UserActions} from "./UserActions"
-import {Dialog} from "../../components/Dialog"
-import {Room} from "../../shared"
-import agritimeEmoji from "../../assets/agritime-sundial-nobg.png"
-import {QRCodeShare} from "./qrCode"
 import {NavDrawer} from "../../layout/NavDrawer"
-import agritimeImg from "../../assets/agritime.png"
 import {useToast} from "../../components/Toast"
+import agritimeImg from "../../assets/agritime.png"
+import {WelcomeDialog} from "./WelcomeDialog"
+import {Add} from "@mui/icons-material"
+import {AddUser} from "./AddUser"
 
 export const RoomHome = () => {
   const {roomId} = useParams<{roomId: string}>()
@@ -79,7 +78,6 @@ export const RoomHome = () => {
             Agritime
           </Typography>
         </Stack>
-        {/* <AppSettings /> */}
         <NavDrawer room={room} />
       </Stack>
 
@@ -88,6 +86,24 @@ export const RoomHome = () => {
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Typography level="h2">Timer</Typography>
             <Stack direction="row" gap="1rem">
+              <AddUser
+                renderButton={(onClick) => (
+                  <IconButton onClick={onClick}>
+                    <Add />
+                  </IconButton>
+                )}
+                save={(name) => {
+                  room.users.push({
+                    name,
+                    anonymous: true,
+                    connected: false,
+                    timeRemaining: room.initTime,
+                    order: room.users.length,
+                    id: crypto.randomUUID(),
+                  })
+                  upsertRoom(room)
+                }}
+              />
               <SettingsPage room={room} upsertRoom={upsertRoom} />
               <ShareRoom room={room} />
             </Stack>
@@ -139,9 +155,8 @@ export const RoomHome = () => {
           </Droppable>
         </DragDropContext>
 
-        {room.users.length > 1 && (
+        {room.users.length > 1 ? (
           <Button
-            disabled={room.timerOn !== me.id}
             onClick={() => {
               const current = room.users.indexOf(
                 room.users.find((u) => u.id === room.timerOn) ?? room.users[0]
@@ -150,77 +165,41 @@ export const RoomHome = () => {
               switchTime(room.users[idx])
             }}
             size="lg"
-            sx={{mt: "4rem", width: "100%"}}
+            sx={{
+              mt: "4rem",
+              width: "100%",
+              background: (theme) =>
+                room.timerOn === me.id
+                  ? theme.palette.success.solidBg
+                  : undefined,
+              ":hover": {
+                background: (theme) =>
+                  room.timerOn === me.id
+                    ? theme.palette.success.solidHoverBg
+                    : undefined,
+              },
+            }}
           >
-            Pass Turn!
+            {room.timerOn === me.id ? "Pass Turn!" : "Next"}
           </Button>
+        ) : (
+          <Stack>
+            <ShareLink
+              code={room.code}
+              sx={{
+                display: "flex",
+                alignSelf: "center",
+                mt: 8,
+                p: 1,
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexDirection: "row",
+                gap: 1,
+              }}
+            />
+          </Stack>
         )}
       </PageLayout>
-    </>
-  )
-}
-
-const WelcomeDialog = ({room}: {room: Room}) => {
-  const [seeState, setSeeState] = useState<"hasSeen" | "seeing" | "hasNotSeen">(
-    "hasNotSeen"
-  )
-
-  useEffect(() => {
-    if (
-      room.users.filter((u) => u.connected).length === 1 &&
-      seeState !== "hasSeen"
-    ) {
-      setSeeState("seeing")
-    }
-  }, [room.users])
-
-  return (
-    <>
-      <Dialog
-        open={seeState === "seeing"}
-        setOpen={() => setSeeState("hasSeen")}
-        title={
-          <Typography
-            endDecorator={
-              <img src={agritimeEmoji} width={"16px"} height={"16px"} />
-            }
-          >
-            Welcome to your timer!
-          </Typography>
-        }
-      >
-        <Stack gap={2} mt={4} alignItems={"center"}>
-          <Typography textAlign={"center"}>
-            You can share this link so your friends can join
-          </Typography>
-          <ShareLink
-            url={`${location.origin}/accept-code?code=${room.code}`}
-            sx={{
-              my: 2,
-              mx: 0,
-              width: "fit-content",
-              display: "flex",
-              p: "8px",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexDirection: "row",
-              gap: 1,
-            }}
-          />
-          <QRCodeShare
-            url={`${location.origin}/accept-code?code=${room.code}`}
-          />
-
-          <Button
-            sx={{width: "100%"}}
-            onClick={() => {
-              setSeeState("hasSeen")
-            }}
-          >
-            Got it!
-          </Button>
-        </Stack>
-      </Dialog>
     </>
   )
 }

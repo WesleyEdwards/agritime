@@ -3,7 +3,7 @@ import {IconButton, Stack, Typography, Card, CardProps} from "@mui/joy"
 import {useState} from "react"
 import {Room} from "../../shared"
 import {useToast} from "../../components/Toast"
-import {QRCodeShare} from "./qrCode"
+import {QRCodeImg} from "./qrCode"
 import {Dialog} from "../../components/Dialog"
 
 export const ShareRoom = ({room}: {room: Room}) => {
@@ -28,9 +28,9 @@ export const ShareRoom = ({room}: {room: Room}) => {
               {room.code}
             </Typography>
           </Stack>
-          <QRCodeShare url={url} />
+          <QRCodeImg url={url} />
           <ShareLink
-            url={url}
+            code={room.code}
             sx={{
               display: "flex",
               p: 1,
@@ -46,7 +46,9 @@ export const ShareRoom = ({room}: {room: Room}) => {
   )
 }
 
-export const ShareLink = ({url, ...rest}: {url: string} & CardProps) => {
+export const ShareLink = ({code, ...rest}: {code: string} & CardProps) => {
+  const url = `${location.origin}/accept-code?code=${code}`
+
   const toast = useToast()
   return (
     <Card variant="soft" {...rest}>

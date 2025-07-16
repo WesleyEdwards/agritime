@@ -14,7 +14,6 @@ export const useRoom = (id: string) => {
     api
       .getRoom({id}, aborter)
       .then((foundRoom) => {
-        console.log("Found room", foundRoom)
         if (foundRoom.users.every((u) => u.id !== user.id)) {
           setRoom(null)
         } else setRoom(foundRoom)
@@ -29,7 +28,6 @@ export const useRoom = (id: string) => {
   useEffect(() => {
     const handleUpsertRoom = (params: EventsMap["upsertRoom"]) => {
       if (params.room.id === id) {
-        console.log({handleUpsertRoom: params.room})
         aborter.abort()
         setRoom((prev) => {
           if (!prev) return params.room
@@ -68,7 +66,6 @@ export const useRoom = (id: string) => {
         } satisfies EventsMap["upsertRoom"])
       }
       setRoom((prev) => (prev ? {...prev, users: users} : prev))
-      console.log("New order is: ", room?.users)
     },
     [room, socket, user]
   )

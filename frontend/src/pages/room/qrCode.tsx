@@ -5,7 +5,7 @@ const generateQR = async (text: string): Promise<string> => {
   return await QRCode.toDataURL(text)
 }
 
-export const QRCodeShare = ({url}: {url: string}) => {
+export const QRCodeImg = ({url}: {url: string}) => {
   const [qr, setQr] = useState<string>()
 
   useEffect(() => {

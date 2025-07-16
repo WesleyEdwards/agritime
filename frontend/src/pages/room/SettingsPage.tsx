@@ -10,7 +10,7 @@ import {
   MenuItem,
   Stack,
 } from "@mui/joy"
-import {AccessTime, Add, Logout, Settings} from "@mui/icons-material"
+import {AccessTime, Logout, Settings} from "@mui/icons-material"
 import {Room} from "../../shared"
 import React, {useState} from "react"
 import {Dialog} from "../../components/Dialog"
@@ -38,25 +38,6 @@ export const SettingsPage = ({
           <Settings />
         </MenuButton>
         <Menu placement="bottom-end" keepMounted>
-          <AddUser
-            renderButton={(onClick) => (
-              <MenuItem onClick={onClick}>
-                <Add />
-                Add People
-              </MenuItem>
-            )}
-            save={(name) => {
-              room.users.push({
-                name,
-                anonymous: true,
-                connected: false,
-                timeRemaining: room.initTime,
-                order: room.users.length,
-                id: crypto.randomUUID(),
-              })
-              upsertRoom(room)
-            }}
-          />
           <StartingTime
             renderButton={(onClick) => (
               <MenuItem onClick={onClick}>
@@ -130,48 +111,6 @@ export const StartingTime = ({
             }}
           >
             Save
-          </Button>
-        </Stack>
-      </Dialog>
-    </>
-  )
-}
-
-export const AddUser = ({
-  save,
-  renderButton,
-}: {
-  renderButton: (onClick: () => void) => React.ReactNode
-  save: (name: string) => void
-}) => {
-  const [name, setName] = useState("")
-  const [open, setOpen] = useState(false)
-  return (
-    <>
-      {renderButton(() => {
-        setOpen(true)
-      })}
-
-      <Dialog title={"Add Person"} open={open} setOpen={setOpen}>
-        <Stack gap={2}>
-          <FormControl>
-            <Input
-              placeholder="Name"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value)
-              }}
-            />
-          </FormControl>
-          <Button
-            onClick={() => {
-              setOpen(false)
-              save(name)
-              setName("")
-            }}
-            disabled={name === ""}
-          >
-            Add
           </Button>
         </Stack>
       </Dialog>

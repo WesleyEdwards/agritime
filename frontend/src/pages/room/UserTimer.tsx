@@ -46,6 +46,10 @@ export const UserTimer = ({
         borderColor: timingUser
           ? theme.vars.palette.success.outlinedBorder
           : undefined,
+
+        backgroundColor: timingUser
+          ? theme.palette.background.level1
+          : theme.palette.background.surface,
       })}
     >
       {user.connected && (

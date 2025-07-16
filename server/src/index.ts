@@ -2,9 +2,8 @@ import express from "express"
 import {createServer} from "node:http"
 import {Server} from "socket.io"
 import cors from "cors"
-import {createSimplyServer} from "simply-served"
-import {ServerCtx, simplyServerEndpoints} from "./simplyServerEndpoints"
-import {emitEvent, logger} from "./events"
+import {createAgritimeServer} from "./simplyServerEndpoints"
+import {emitEvent} from "./events"
 import {events, EventsMap, Room, User} from "./shared"
 import {reconcileTime, updateConnection} from "./utils"
 
@@ -26,7 +25,6 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   const userId = socket.handshake.auth.userId
-  logger?.("A user is connected", userId)
   updateConnection(rooms, io, userId, true)
 
   socket.on(events.upsertUser, (params: EventsMap["upsertUser"]) => {
@@ -48,7 +46,6 @@ io.on("connection", (socket) => {
   })
 
   socket.on(events.switchTime, (params: EventsMap["switchTime"]) => {
-    logger?.(`Switch time to ${params.newUser}`)
     const room = rooms.get(params.room)
     if (room) {
       reconcileTime(room, params.timeOfSwitch)
@@ -62,32 +59,20 @@ io.on("connection", (socket) => {
   })
 
   socket.on(events.upsertRoom, (params: EventsMap["upsertRoom"]) => {
-    logger?.(`upsert room ${params.room.id}`)
     rooms.set(params.room.id, params.room)
     emitEvent(io, {upsertRoom: params})
   })
 
   socket.on("disconnect", () => {
     const userId = socket.handshake.auth.userId
-    logger?.(`User ${userId} has disconnected`)
     updateConnection(rooms, io, userId, false)
   })
 })
 
-const server1 = createSimplyServer<ServerCtx>({
-  initContext: {db: {rooms}, io},
-  getAuth: () => {
-    return {}
-  },
-  controllers: simplyServerEndpoints,
-  afterGenerateEndpoints: (app) => {
-    app.get("/", (req, res) => {
-      res.send("Welcome to Agritime!")
-    })
-  },
-})
+// REST Endpoints
+const simplyServer = createAgritimeServer(rooms, io)
 
-server1.generateEndpoints(app)
+simplyServer.generateEndpoints(app)
 
 server.listen(8003, () => {
   console.info("server running at http://localhost:8003")
