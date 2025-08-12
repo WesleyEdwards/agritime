@@ -26,13 +26,15 @@ export const createAgritimeServer = (
   app.use(addContext<ServerCtx>({db: {rooms}, io}))
 
   app.get("/", (req, res) => {
-    res.send("Welcome to Agritime!")
+    res.send(
+      "Welcome to Agritime! Start a timer at https://app.agritime.wesleyedwards.xyz/"
+    )
   })
 
   addController<ServerCtx>(app, {
     path: "/rest",
-    routes: [
-      buildRoute<ServerCtx>("post")
+    routes: {
+      getRooms: buildRoute<ServerCtx>("post")
         .path("/get-room")
         .withBody({
           validator: z.object({
@@ -56,7 +58,7 @@ export const createAgritimeServer = (
           throw new NotFoundError()
         }),
 
-      buildRoute<ServerCtx>("post")
+      createRoom: buildRoute<ServerCtx>("post")
         .path("/create-room")
         .withBody({
           validator: z.object({
@@ -90,7 +92,7 @@ export const createAgritimeServer = (
           return res.json(room)
         }),
 
-      buildRoute<ServerCtx>("post")
+      joinRoom: buildRoute<ServerCtx>("post")
         .path("/join-room")
         .withBody({
           validator: z.object({
@@ -135,7 +137,7 @@ export const createAgritimeServer = (
           return res.status(404).json({error: "Room not found"})
         }),
 
-      buildRoute<ServerCtx>("post")
+      leaveRoom: buildRoute<ServerCtx>("post")
         .path("/leave-room")
         .withBody({
           validator: z.object({
@@ -156,6 +158,6 @@ export const createAgritimeServer = (
           }
           return res.json({ok: true})
         }),
-    ],
+    },
   })
 }

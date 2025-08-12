@@ -73,5 +73,5 @@ io.on("connection", (socket) => {
 createAgritimeServer(app, rooms, io)
 
 server.listen(8003, () => {
-  console.info("server running at http://localhost:8003")
+  console.info("listening on port 8003")
 })
