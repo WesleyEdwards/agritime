@@ -70,9 +70,7 @@ io.on("connection", (socket) => {
 })
 
 // REST Endpoints
-const simplyServer = createAgritimeServer(rooms, io)
-
-simplyServer.generateEndpoints(app)
+createAgritimeServer(app, rooms, io)
 
 server.listen(8003, () => {
   console.info("server running at http://localhost:8003")
